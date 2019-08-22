@@ -388,6 +388,9 @@ namespace UnityEditor.Rendering.LookDev
     [System.Serializable]
     public class DebugContext
     {
+        /// <summary>Display shadows in view.</summary>
+        public bool shadow = true;
+
         ///// <summary>Display the debug grey balls</summary>
         //public bool greyBalls;
 
