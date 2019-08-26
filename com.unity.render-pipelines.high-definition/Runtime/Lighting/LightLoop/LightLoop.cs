@@ -320,11 +320,8 @@ namespace UnityEngine.Rendering.HighDefinition
                 globalLightListAtomic = new ComputeBuffer(1, sizeof(uint));
             }
 
-            public void AllocateResolutionDependentBuffers(HDCamera hdCamera, int viewCount, int maxLightOnScreen)
+            public void AllocateResolutionDependentBuffers(HDCamera hdCamera, int width, int height, int viewCount, int maxLightOnScreen)
             {
-                int width = (int)hdCamera.screenSize.x;
-                int height = (int)hdCamera.screenSize.y;
-
                 var nrTilesX = (width + LightDefinitions.s_TileSizeFptl - 1) / LightDefinitions.s_TileSizeFptl;
                 var nrTilesY = (height + LightDefinitions.s_TileSizeFptl - 1) / LightDefinitions.s_TileSizeFptl;
                 var nrTiles = nrTilesX * nrTilesY * viewCount;
@@ -652,7 +649,8 @@ namespace UnityEngine.Rendering.HighDefinition
         void InitShadowSystem(HDRenderPipelineAsset hdAsset, RenderPipelineResources defaultResources)
         {
             m_ShadowInitParameters = hdAsset.currentPlatformRenderPipelineSettings.hdShadowInitParams;
-            m_ShadowManager = new HDShadowManager(
+            m_ShadowManager = HDShadowManager.instance;
+            m_ShadowManager.InitShadowManager(
                 defaultResources,
                 m_ShadowInitParameters.directionalShadowsDepthBits,
                 m_ShadowInitParameters.punctualLightShadowAtlas,
@@ -917,11 +915,11 @@ namespace UnityEngine.Rendering.HighDefinition
             return 32 * (1 << k_Log2NumClusters);       // total footprint for all layers of the tile (measured in light index entries)
         }
 
-        void LightLoopAllocResolutionDependentBuffers(HDCamera hdCamera)
+        void LightLoopAllocResolutionDependentBuffers(HDCamera hdCamera, int width, int height)
         {
             m_MaxViewCount = Math.Max(hdCamera.viewCount, m_MaxViewCount);
 
-            m_TileAndClusterData.AllocateResolutionDependentBuffers(hdCamera, m_MaxViewCount, m_MaxLightsOnScreen);
+            m_TileAndClusterData.AllocateResolutionDependentBuffers(hdCamera, width, height, m_MaxViewCount, m_MaxLightsOnScreen);
 
             // Allocate matrix arrays used for LightList building
             {
@@ -1383,7 +1381,9 @@ namespace UnityEngine.Rendering.HighDefinition
 
 #if ENABLE_RAYTRACING
             // If there is still a free slot in the screen space shadow array and this needs to render a screen space shadow
-            if(screenSpaceShadowIndex < m_Asset.currentPlatformRenderPipelineSettings.hdShadowInitParams.maxScreenSpaceShadows && additionalLightData.WillRenderScreenSpaceShadow())
+            if (hdCamera.frameSettings.IsEnabled(FrameSettingsField.RayTracing)
+                && screenSpaceShadowIndex < m_Asset.currentPlatformRenderPipelineSettings.hdShadowInitParams.maxScreenSpaceShadows
+                && additionalLightData.WillRenderScreenSpaceShadow())
             {
                 lightData.screenSpaceShadowIndex = screenSpaceShadowIndex;
                 additionalLightData.shadowIndex = -1;
@@ -2282,6 +2282,8 @@ namespace UnityEngine.Rendering.HighDefinition
                     }
                 }
 
+                HDShadowManager.instance.CheckForCulledCachedShadows();
+
                 if (decalDatasCount > 0)
                 {
                     for (int i = 0; i < decalDatasCount; i++)
@@ -2467,15 +2469,13 @@ namespace UnityEngine.Rendering.HighDefinition
 
                 cmd.SetComputeIntParam(parameters.screenSpaceAABBShader, HDShaderIDs.g_isOrthographic, parameters.isOrthographic ? 1 : 0);
 
-                // In the stereo case, we have two sets of light bounds to iterate over (bounds are in per-eye view space)
+                // With XR single-pass, we have one set of light bounds per view to iterate over (bounds are in view space for each view)
                 cmd.SetComputeIntParam(parameters.screenSpaceAABBShader, HDShaderIDs.g_iNrVisibLights, parameters.totalLightCount);
                 cmd.SetComputeBufferParam(parameters.screenSpaceAABBShader, parameters.screenSpaceAABBKernel, HDShaderIDs.g_data, tileAndCluster.convexBoundsBuffer);
+                cmd.SetComputeBufferParam(parameters.screenSpaceAABBShader, parameters.screenSpaceAABBKernel, HDShaderIDs.g_vBoundsBuffer, tileAndCluster.AABBBoundsBuffer);
 
                 cmd.SetComputeMatrixArrayParam(parameters.screenSpaceAABBShader, HDShaderIDs.g_mProjectionArr, parameters.lightListProjHMatrices);
                 cmd.SetComputeMatrixArrayParam(parameters.screenSpaceAABBShader, HDShaderIDs.g_mInvProjectionArr, parameters.lightListInvProjHMatrices);
-
-                // In stereo, we output two sets of AABB bounds
-                cmd.SetComputeBufferParam(parameters.screenSpaceAABBShader, parameters.screenSpaceAABBKernel, HDShaderIDs.g_vBoundsBuffer, tileAndCluster.AABBBoundsBuffer);
 
                 cmd.DispatchCompute(parameters.screenSpaceAABBShader, parameters.screenSpaceAABBKernel, (parameters.totalLightCount + 7) / 8, parameters.viewCount, 1);
             }
@@ -2974,16 +2974,6 @@ namespace UnityEngine.Rendering.HighDefinition
         {
             // When contact shadow index is 0, then there is no light casting contact shadow in the view
             return m_EnableContactShadow && m_ContactShadowIndex != 0;
-        }
-
-        bool WillRenderScreenSpaceShadows()
-        {
-            // For now this is only for DXR.
-#if ENABLE_RAYTRACING
-            return true;
-#else
-            return false;
-#endif
         }
 
         void SetContactShadowsTexture(HDCamera hdCamera, RTHandle contactShadowsRT, CommandBuffer cmd)
