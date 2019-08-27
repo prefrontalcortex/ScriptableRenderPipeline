@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine.Rendering;
 using System.Linq;
+using System;
 
 namespace UnityEngine.Rendering.HighDefinition
 {
@@ -21,15 +22,13 @@ namespace UnityEngine.Rendering.HighDefinition
         /// </summary>
         /// <typeparam name="CustomPass"></typeparam>
         /// <returns></returns>
+        [SerializeReference]
         public List<CustomPass>         customPasses = new List<CustomPass>();
 
         /// <summary>
         /// Where the custom passes are going to be injected in HDRP
         /// </summary>
         public CustomPassInjectionPoint injectionPoint;
-        
-        [SerializeField]
-        List<CustomPass>                m_CustomPassList = new List<CustomPass>();
 
         // The current active custom pass volume is simply the smallest overlapping volume with the trigger transform
         static HashSet<CustomPassVolume>    m_ActivePassVolumes = new HashSet<CustomPassVolume>();
@@ -50,10 +49,16 @@ namespace UnityEngine.Rendering.HighDefinition
         {
             foreach (var pass in customPasses)
             {
-                if (pass != null && pass.settings.enabled)
-                    using (new ProfilingSample(cmd, pass.settings.name))
+                if (pass != null && pass.enabled)
+                    using (new ProfilingSample(cmd, pass.name))
                         pass.ExecuteInternal(renderContext, cmd, hdCamera, cullingResult, cameraColorBuffer, cameraDepthBuffer, customColorBuffer, customDepthBuffer);
             }
+        }
+
+        internal void CleanupPasses()
+        {
+            foreach (var pass in customPasses)
+                pass.CleanupPassInternal();
         }
 
         static void Register(CustomPassVolume volume) => m_ActivePassVolumes.Add(volume);
@@ -124,10 +129,33 @@ namespace UnityEngine.Rendering.HighDefinition
                 return GetVolumeExtent(v1).CompareTo(GetVolumeExtent(v2));
             });
         }
+
+        internal static void Cleanup()
+        {
+            foreach (var pass in m_ActivePassVolumes)
+            {
+                pass.CleanupPasses();
+            }
+        }
         
         public static CustomPassVolume GetActivePassVolume(CustomPassInjectionPoint injectionPoint)
         {
             return m_OverlappingPassVolumes.FirstOrDefault(v => v.injectionPoint == injectionPoint);
+        }
+
+        /// <summary>
+        /// Add a pass of type passType in the active pass list
+        /// </summary>
+        /// <param name="passType"></param>
+        public void AddPassOfType(Type passType)
+        {
+            if (!typeof(CustomPass).IsAssignableFrom(passType))
+            {
+                Debug.LogError($"Can't add pass type {passType} to the list because it does not inherit from CustomPass.");
+                return ;
+            }
+
+            customPasses.Add(Activator.CreateInstance(passType) as CustomPass);
         }
 
 #if UNITY_EDITOR

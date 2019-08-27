@@ -791,6 +791,8 @@ namespace UnityEngine.Rendering.HighDefinition
 
             CoreUtils.SafeRelease(m_DepthPyramidMipLevelOffsetsBuffer);
 
+            CustomPassVolume.Cleanup();
+
             // RenderGraph
             m_RenderGraph.Cleanup();
             m_RenderGraph.UnRegisterDebug();

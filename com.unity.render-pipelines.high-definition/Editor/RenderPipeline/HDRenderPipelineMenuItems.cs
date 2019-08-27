@@ -126,7 +126,7 @@ namespace UnityEditor.Rendering.HighDefinition
         [MenuItem("Assets/Create/Shader/HDRP/Custom FullScreen Pass")]
         static void MenuCreateCustomFullScreenPassShader()
         {
-            const string customPassTemplateGUID = "2e9bd7db24646bc409f60aa1d91e8883"; // CustomPassShader.template
+            const string customPassTemplateGUID = "2e9bd7db24646bc409f60aa1d91e8883"; // CustomPassFullScreenShader.template
             string templatePath = AssetDatabase.GUIDToAssetPath(customPassTemplateGUID);
             ProjectWindowUtil.CreateScriptAssetFromTemplateFile(templatePath, "New FullScreen CustomPass.shader");
         }
@@ -134,9 +134,17 @@ namespace UnityEditor.Rendering.HighDefinition
         [MenuItem("Assets/Create/Shader/HDRP/Custom Renderers Pass")]
         static void MenuCreateCustomRenderersPassShader()
         {
-            const string customPassTemplateGUID = "b3306ef233ac5564eaf1f090dfc8640e"; // CustomPassShader.template
+            const string customPassTemplateGUID = "b3306ef233ac5564eaf1f090dfc8640e"; // CustomPassRenderersShader.template
             string templatePath = AssetDatabase.GUIDToAssetPath(customPassTemplateGUID);
             ProjectWindowUtil.CreateScriptAssetFromTemplateFile(templatePath, "New Renderers CustomPass.shader");
+        }
+
+        [MenuItem("Assets/Create/Rendering/C# Custom Pass")]
+        static void MenuCreateCustomPassCSharpScript()
+        {
+            const string customPassTemplateGUID = "06c016224c29ab14fbca28b703c88659"; // CustomPassCSharpScript.template
+            string templatePath = AssetDatabase.GUIDToAssetPath(customPassTemplateGUID);
+            ProjectWindowUtil.CreateScriptAssetFromTemplateFile(templatePath, "New Custom Pass.cs");
         }
 
         //[MenuItem("Internal/HDRP/Add \"Additional Light-shadow Data\" (if not present)")]
