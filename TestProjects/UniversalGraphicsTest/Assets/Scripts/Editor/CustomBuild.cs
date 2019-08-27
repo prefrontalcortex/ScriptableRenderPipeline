@@ -5,6 +5,7 @@ using UnityEngine.Rendering;
 
 public static class CustomBuild
 {
+
     [MenuItem("Tools/Build Android (GLES2 - Gamma)")]
     static void BuildAndroidGLES2Gamma()
     {
@@ -52,7 +53,17 @@ public static class CustomBuild
         GraphicsDeviceType[] graphicsAPIs = { GraphicsDeviceType.Metal };
         BuildScenes(path, graphicsAPIs[0].ToString(), buildTarget, buildOptions, graphicsAPIs);        
     }
-    
+
+    static void BuildWindowsVulkanLinear()
+    {
+        PlayerSettings.colorSpace = ColorSpace.Linear;
+        BuildTarget buildTarget = BuildTarget.StandaloneWindows64;
+        BuildOptions buildOptions = BuildOptions.None;
+
+        GraphicsDeviceType[] graphicsAPIs = { GraphicsDeviceType.Vulkan };
+        BuildScenes(".", graphicsAPIs[0].ToString(), buildTarget, buildOptions, graphicsAPIs);
+    }
+
     static void BuildScenes(string path, string name, BuildTarget buildTarget, BuildOptions buildOptions, GraphicsDeviceType[] graphicsAPIs)
     {
         string buildName = string.Format("{0}{1}", "TestScenes", name);
