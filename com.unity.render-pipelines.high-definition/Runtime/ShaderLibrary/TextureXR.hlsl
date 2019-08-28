@@ -53,7 +53,7 @@
     #endif
 
     #define COORD_TEXTURE2D_X(pixelCoord)                                    uint3(pixelCoord, SLICE_ARRAY_INDEX)
-    #define INDEX_TEXTURE2D_ARRAY_X(slot)                                    slot * _XRViewCount + SLICE_ARRAY_INDEX
+    #define INDEX_TEXTURE2D_ARRAY_X(slot)                                    (slot * _XRViewCount + SLICE_ARRAY_INDEX)
 
     #define TEXTURE2D_X                                                      TEXTURE2D_ARRAY
     #define TEXTURE2D_X_PARAM                                                TEXTURE2D_ARRAY_PARAM
@@ -111,9 +111,9 @@
 // Helper macro to assign view index during compute/ray pass (usually from SV_DispatchThreadID or DispatchRaysIndex())
 #if defined(SHADER_STAGE_COMPUTE) || defined(SHADER_STAGE_RAYTRACING)
     #if defined(UNITY_STEREO_INSTANCING_ENABLED)
-        #define UNITY_XR_ASSIGN_VIEW_INDEX(eyeIndex) unity_StereoEyeIndex = eyeIndex;
+        #define UNITY_XR_ASSIGN_VIEW_INDEX(viewIndex) unity_StereoEyeIndex = viewIndex;
     #else
-        #define UNITY_XR_ASSIGN_VIEW_INDEX(eyeIndex)
+        #define UNITY_XR_ASSIGN_VIEW_INDEX(viewIndex)
     #endif
 
     // Backward compatibility
