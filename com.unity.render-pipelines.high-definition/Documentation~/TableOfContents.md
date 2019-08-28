@@ -69,7 +69,6 @@
     * [Reflection Proxy Volume](Reflection-Proxy-Volume)
   * [Light](Light-Component)
   * [Environment Lighting](Environment-Lighting)
-  * [Static Lighting Sky](Static-Lighting-Sky)
   * [Atmospheric Scattering](Atmospheric-Scattering)
   * [Density Volume](Density-Volume)
   * [Light Layers](Light-Layers)
