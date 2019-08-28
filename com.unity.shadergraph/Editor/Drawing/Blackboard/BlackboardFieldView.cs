@@ -18,7 +18,6 @@ namespace UnityEditor.ShaderGraph.Drawing
         ShaderInput m_Input;
 
         Toggle m_ExposedToogle;
-        Toggle m_GPUInstancedToogle;
         TextField m_ReferenceNameField;
         List<VisualElement> m_Rows;
         public List<VisualElement> rows => m_Rows;
@@ -89,18 +88,6 @@ namespace UnityEditor.ShaderGraph.Drawing
                 });
                 m_ExposedToogle.value = input.generatePropertyBlock;
                 AddRow("Exposed", m_ExposedToogle, input.isExposable);
-				
-                if (input.isGpuInstanceable)
-                {
-                    m_GPUInstancedToogle = new Toggle { value = input.gpuInstanced };
-                    m_GPUInstancedToogle.OnToggleChanged(evt =>
-                    {
-                        m_Graph.owner.RegisterCompleteObjectUndo("Change Hybrid Instanced Toggle");
-                        input.gpuInstanced = evt.newValue;
-                        DirtyNodes(ModificationScope.Graph);
-                    });
-                    AddRow("Hybrid Instanced (experimental)", m_GPUInstancedToogle);
-                }
 				
             }
 

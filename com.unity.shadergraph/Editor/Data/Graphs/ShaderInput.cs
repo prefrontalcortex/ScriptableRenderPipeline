@@ -11,15 +11,6 @@ namespace UnityEditor.ShaderGraph
         public Guid guid => m_Guid.guid;
 
         [SerializeField]
-        private bool m_GPUInstanced = false;
-
-        public bool gpuInstanced
-        {
-            get { return m_GPUInstanced; }
-            set { m_GPUInstanced = value; }
-        }
-
-        [SerializeField]
         string m_Name;
 
         public string displayName
@@ -78,7 +69,6 @@ namespace UnityEditor.ShaderGraph
 
         public abstract ConcreteSlotValueType concreteShaderValueType { get; }
         public abstract bool isExposable { get; }
-        public virtual bool isGpuInstanceable => false;
         public abstract bool isRenamable { get; }
 
         public abstract ShaderInput Copy();

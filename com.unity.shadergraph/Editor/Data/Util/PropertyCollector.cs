@@ -87,7 +87,7 @@ namespace UnityEditor.ShaderGraph
                     if (prop.gpuInstanced)
                     {
                         string varName = $"{prop.referenceName}_Array";
-                        string sType = prop.propertyType.GetHLSLType();
+                        string sType = prop.concreteShaderValueType.ToShaderString(prop.concretePrecision);
                         builder.Append("UNITY_DEFINE_INSTANCED_PROP({0}, {1})", sType, varName);
                         if (count < instancedCount - 1)
                             builder.Append("\\");
