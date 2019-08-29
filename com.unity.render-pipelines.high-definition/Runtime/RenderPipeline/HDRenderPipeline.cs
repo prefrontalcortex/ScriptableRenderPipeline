@@ -1029,42 +1029,43 @@ namespace UnityEngine.Rendering.HighDefinition
             m_FrameSettingsHistoryEnabled = FrameSettingsHistory.enabled;
 
             {
-                // SRP.Render() can be called several times per frame.
-                // Also, most Time variables do not consistently update in the Scene View.
-                // This makes reliable detection of the start of the new frame VERY hard.
-                // One of the exceptions is 'Time.realtimeSinceStartup'.
-                // Therefore, outside of the Play Mode we update the time at 60 fps,
-                // and in the Play Mode we rely on 'Time.frameCount'.
-                float t = Time.realtimeSinceStartup;
-                int c = Time.frameCount;
-
-                bool newFrame;
+                float newTime;
+                bool  newFrame;
 
                 if (Application.isPlaying)
                 {
+                    newTime  = Time.time; // Using this allows time pausing and scaling
+                    int c    = Time.frameCount;
                     newFrame = m_FrameCount != c;
-
-                    m_FrameCount = c;
                 }
                 else
                 {
-                    // If we switch to other scene Time.realtimeSinceStartup is reset, so we need to
+                    // SRP.Render() can be called several times per frame.
+                    // Also, most Time variables do not consistently update in the Scene View.
+                    // This makes reliable detection of the start of the new frame VERY hard.
+                    // One of the exceptions is 'Time.realtimeSinceStartup'.
+                    // Therefore, outside of the Play Mode we update the time at 60 fps,
+                    // and in the Play Mode we can rely on 'Time.frameCount'.
+                    newTime  = Time.realtimeSinceStartup;
+                    newFrame = (newTime - m_Time) > 0.0166f;
+
+                    // If we switch to other scene 'Time.realtimeSinceStartup' is reset, so we need to
                     // reset also m_Time. Here we simply detect ill case to trigger the reset.
-                    m_Time = m_Time > t ? 0.0f : m_Time;
-
-                    newFrame = (t - m_Time) > 0.0166f;
-
-                    if (newFrame)
-                        m_FrameCount++;
+                    newFrame = newFrame || (newTime <= m_Time);
                 }
 
                 if (newFrame)
                 {
                     HDCamera.CleanUnused();
 
-                    // Make sure both are never 0.
-                    m_LastTime = (m_Time > 0) ? m_Time : t;
-                    m_Time = t;
+                    if (newTime > m_Time)
+                        m_FrameCount++;
+                    else
+                        m_FrameCount = 0;
+
+                    // Make sure (m_Time > m_LastTime).
+                    m_LastTime = (newTime > m_Time) ? m_Time : 0;
+                    m_Time     = newTime;
                 }
             }
 
@@ -1827,6 +1828,8 @@ namespace UnityEngine.Rendering.HighDefinition
             var showGizmos = camera.cameraType == CameraType.Game
                 || camera.cameraType == CameraType.SceneView;
 #endif
+
+            RenderTransparencyOverdraw(cullingResults, hdCamera, renderContext, cmd);
 
             if (m_CurrentDebugDisplaySettings.IsDebugMaterialDisplayEnabled() || m_CurrentDebugDisplaySettings.IsMaterialValidationEnabled())
             {
@@ -2983,6 +2986,52 @@ namespace UnityEngine.Rendering.HighDefinition
                     var rendererListTransparent = RendererList.Create(CreateTransparentRendererListDesc(cull, hdCamera.camera, m_AllTransparentPassNames, m_CurrentRendererConfigurationBakedLighting, stateBlock: m_DepthStateOpaque));
                     DrawTransparentRendererList(renderContext, cmd, hdCamera.frameSettings, rendererListTransparent);
                 }
+            }
+        }
+
+        void RenderTransparencyOverdraw(CullingResults cull, HDCamera hdCamera, ScriptableRenderContext renderContext, CommandBuffer cmd)
+        {
+            if (m_CurrentDebugDisplaySettings.IsDebugDisplayEnabled() && m_CurrentDebugDisplaySettings.data.fullScreenDebugMode == FullScreenDebugMode.TransparencyOverdraw)
+            {
+
+                CoreUtils.SetRenderTarget(cmd, m_CameraColorBuffer, m_SharedRTManager.GetDepthStencilBuffer(), clearFlag: ClearFlag.Color, clearColor: Color.black);
+                var stateBlock = new RenderStateBlock
+                {
+                    mask = RenderStateMask.Blend,
+                    blendState = new BlendState
+                    {
+                        blendState0 = new RenderTargetBlendState
+                        {
+
+                            destinationColorBlendMode = BlendMode.One,
+                            sourceColorBlendMode = BlendMode.One,
+                            destinationAlphaBlendMode = BlendMode.One,
+                            sourceAlphaBlendMode = BlendMode.One,
+                            colorBlendOperation = BlendOp.Add,
+                            alphaBlendOperation = BlendOp.Add,
+                            writeMask = ColorWriteMask.All
+                        }
+                    }
+                };
+
+                // High res transparent objects, drawing in m_DebugFullScreenTempBuffer
+                cmd.SetGlobalFloat(HDShaderIDs._DebugTransparencyOverdrawWeight, 1.0f);
+
+                var passNames = m_Asset.currentPlatformRenderPipelineSettings.supportTransparentBackface ? m_AllTransparentPassNames : m_TransparentNoBackfaceNames;
+                m_DebugFullScreenPropertyBlock.SetFloat(HDShaderIDs._TransparencyOverdrawMaxPixelCost, (float)m_DebugDisplaySettings.data.transparencyDebugSettings.maxPixelCost);
+                var rendererList = RendererList.Create(CreateTransparentRendererListDesc(cull, hdCamera.camera, passNames, stateBlock: stateBlock));
+                DrawTransparentRendererList(renderContext, cmd, hdCamera.frameSettings, rendererList);
+                rendererList = RendererList.Create(CreateTransparentRendererListDesc(cull, hdCamera.camera, passNames, renderQueueRange: HDRenderQueue.k_RenderQueue_AfterPostProcessTransparent, stateBlock: stateBlock));
+                DrawTransparentRendererList(renderContext, cmd, hdCamera.frameSettings, rendererList);
+
+                // Low res transparent objects, copying result m_DebugTranparencyLowRes
+                cmd.SetGlobalFloat(HDShaderIDs._DebugTransparencyOverdrawWeight, 0.25f);
+                rendererList = RendererList.Create(CreateTransparentRendererListDesc(cull, hdCamera.camera, passNames, renderQueueRange: HDRenderQueue.k_RenderQueue_LowTransparent, stateBlock: stateBlock));
+                DrawTransparentRendererList(renderContext, cmd, hdCamera.frameSettings, rendererList);
+                PushFullScreenDebugTexture(hdCamera, cmd, m_CameraColorBuffer, FullScreenDebugMode.TransparencyOverdraw);
+
+                // weighted sum of m_DebugFullScreenTempBuffer and m_DebugTranparencyLowRes done in DebugFullScreen.shader
+
             }
         }
 
