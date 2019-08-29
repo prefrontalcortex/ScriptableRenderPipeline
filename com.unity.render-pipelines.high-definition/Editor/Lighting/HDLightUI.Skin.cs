@@ -23,7 +23,7 @@ namespace UnityEditor.Rendering.HighDefinition
             public readonly GUIContent lowShadowQualitySubHeader = new GUIContent("Low Quality Settings");
 
             // Base (copy from LightEditor.cs)
-            public readonly GUIContent outterAngle = new GUIContent("Outter Angle", "Controls the angle, in degrees, at the base of a Spot Light's cone.");
+            public readonly GUIContent outterAngle = new GUIContent("Outer Angle", "Controls the angle, in degrees, at the base of a Spot Light's cone.");
             public readonly GUIContent cookieSizeX = new GUIContent("Size X", "Sets the width of the Cookie mask currently assigned to the Light.");
             public readonly GUIContent cookieSizeY = new GUIContent("Size Y", "Sets the height of the Cookie mask currently assigned to the Light.");
             public readonly GUIContent shadowBias = new GUIContent("Bias", "Controls the distance at which HDRP pushes shadows away from the Light. Useful for avoiding false self-shadowing artifacts.");
@@ -44,7 +44,7 @@ namespace UnityEditor.Rendering.HighDefinition
             public readonly GUIContent directionalIntensity = new GUIContent("Intensity (Lux)", "Illuminance of the Directional Light, at ground level, in lux.");
             public readonly GUIContent punctualIntensity = new GUIContent("Intensity (Lumen)", "Luminous power of the Light in lumen.");
             public readonly GUIContent areaIntensity = new GUIContent("Intensity (Lumen)", "Luminous power of the Light in Lumen.");
-            public readonly GUIContent lightIntensity = new GUIContent("Intensity", "");
+            public readonly GUIContent lightIntensity = new GUIContent("Intensity", "Sets the strength of the Light. Use the drop-down to select the light units to use.");
 
             public readonly GUIContent maxSmoothness = new GUIContent("Max Smoothness", "Controls the roughness of the Material and is useful when the specular highlight is either too small or too sharp. Very low cost way of faking spherical area lighting.");
             public readonly GUIContent lightRadius = new GUIContent("Emission Radius", "Sets the softness of the core of the Punctual Light to create fill lighting.");
