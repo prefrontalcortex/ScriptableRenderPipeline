@@ -79,12 +79,8 @@ namespace UnityEditor.Experimental.Rendering.Universal
                 UniversalRenderPipelineAsset asset = UniversalRenderPipeline.asset;
                 if (asset != null)
                 {
-                    Renderer2DData assetData = asset.scriptableRendererData as Renderer2DData;
-                    //if (assetData == null)
-                    //    assetData = Renderer2DData.s_Renderer2DDataInstance;
-
-                    if (assetData != null)
-                        return true;
+                    Renderer2DData assetData = Light2DEditorUtility.GetRenderer2DData();
+                    return assetData != null;
                 }
             }
 
