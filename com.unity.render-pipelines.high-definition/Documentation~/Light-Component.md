@@ -200,10 +200,10 @@ In your [HDRP Asset](HDRP-Asset.html), select **High** from the **Filtering Qual
 
 | **Property**                   | **Description**                                              |
 | ------------------------------ | ------------------------------------------------------------ |
-| **Shadow Softness**            | Defines the behavior of area light shadows. Higher softness values mimic a larger emission radius while lower values [punctual light](Glossary.html#PunctualLights) shadows. High values increase shadow blur depending on the distance between the pixel receiving the shadow and the shadow caster. |
+| **Shadow Softness**            | Defines the behavior of area light shadows. Higher softness values mimic a larger emission radius while lower values mimic a [punctual light](Glossary.html#PunctualLights). High values increase shadow blur depending on the distance between the pixel receiving the shadow and the shadow caster. |
 | **Blocker Sample Count**       | The number of samples HDRP uses to evaluate the distance between the pixel receiving the shadow and the shadow caster. Higher values give better accuracy. |
 | **Filter Sample Count**        | The number of samples HDRP uses to blur shadows. Higher values give smoother results. |
-| **Minimal size of the filter** | The minimum size of the whole shadow’s blur effect, no matter the distance between the pixel and the shadow caster. Higher values give blurrier results. |
+| **Minimum Size of the Filter** | The minimum size of the whole shadow’s blur effect, no matter the distance between the pixel and the shadow caster. Higher values give blurrier results. |
 
 ##### Contact Shadows
 
