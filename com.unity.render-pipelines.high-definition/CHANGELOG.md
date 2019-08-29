@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Support for Material Quality in Shader Graph
 - Material Quality support selection in HDRP Asset
 - Renamed XR shader macro from UNITY_STEREO_ASSIGN_COMPUTE_EYE_INDEX to UNITY_XR_ASSIGN_VIEW_INDEX
-- Ray tracing support for VR (AO, GI and directional shadows)
+- Ray tracing support for VR single-pass
 
 ### Fixed
 - Fixed wizard infinite loop on cancellation
