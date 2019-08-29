@@ -307,18 +307,10 @@ namespace UnityEngine.Rendering.Universal
             // If no data we can't create pipeline instance
             if (m_RendererDataList[0] == null)
             {
-                // Could be upgrading for the first time
-                if (m_NeedsUpgrade)
-                {
-                    UpgradeAsset(this);
-                }
-                else
-                {
-                    Debug.LogError(
-                        $"Default Renderer is missing, make sure there is a Renderer assigned as the default on the current Universal RP asset:{UniversalRenderPipeline.asset.name}",
-                        this);
-                    return null;
-                }
+                Debug.LogError(
+                    $"Default Renderer is missing, make sure there is a Renderer assigned as the default on the current Universal RP asset:{UniversalRenderPipeline.asset.name}",
+                    this);
+                return null;
             }
 
             if(m_Renderers == null || m_Renderers.Length < m_RendererDataList.Length)
@@ -740,6 +732,9 @@ namespace UnityEngine.Rendering.Universal
                 k_AssetVersion = 5;
                 m_NeedsUpgrade = true;
             }
+
+            if(m_NeedsUpgrade)
+                EditorApplication.delayCall = () => UpgradeAsset(this);
         }
 
 
