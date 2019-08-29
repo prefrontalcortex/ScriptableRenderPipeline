@@ -15,8 +15,14 @@ Varyings BuildVaryings(Attributes input)
     VertexDescription vertexDescription = VertexDescriptionFunction(vertexDescriptionInputs);
     
     // Assign modified vertex attributes
-    input.positionOS = vertexDescription.Position;
-#endif
+    input.positionOS = vertexDescription.VertexPosition;
+    #if defined(VARYINGS_NEED_NORMAL_WS)
+        input.normalOS = vertexDescription.VertexNormal;
+    #endif //FEATURES_GRAPH_NORMAL  
+    #if defined(VARYINGS_NEED_TANGENT_WS)
+        input.tangentOS.xyz = vertexDescription.VertexTangent.xyz;
+    #endif //FEATURES GRAPH TANGENT
+#endif //FEATURES_GRAPH_VERTEX
 
     // Returns the camera relative position (if enabled)
     float3 positionWS = TransformObjectToWorld(input.positionOS);

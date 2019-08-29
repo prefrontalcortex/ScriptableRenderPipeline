@@ -30,7 +30,9 @@ namespace UnityEditor.Rendering.Universal
             // Port mask
             vertexPorts = new List<int>()
             {
-                PBRMasterNode.PositionSlotId
+                PBRMasterNode.PositionSlotId,
+                PBRMasterNode.VertNormalSlotId,
+                PBRMasterNode.VertTangentSlotId
             },
             pixelPorts = new List<int>
             {
@@ -104,7 +106,9 @@ namespace UnityEditor.Rendering.Universal
             // Port mask
             vertexPorts = new List<int>()
             {
-                PBRMasterNode.PositionSlotId
+                PBRMasterNode.PositionSlotId,
+                PBRMasterNode.VertNormalSlotId,
+                PBRMasterNode.VertTangentSlotId
             },
             pixelPorts = new List<int>()
             {
@@ -146,7 +150,9 @@ namespace UnityEditor.Rendering.Universal
             // Port mask
             vertexPorts = new List<int>()
             {
-                PBRMasterNode.PositionSlotId
+                PBRMasterNode.PositionSlotId,
+                PBRMasterNode.VertNormalSlotId,
+                PBRMasterNode.VertTangentSlotId
             },
             pixelPorts = new List<int>()
             {
@@ -194,7 +200,9 @@ namespace UnityEditor.Rendering.Universal
             // Port mask
             vertexPorts = new List<int>()
             {
-                PBRMasterNode.PositionSlotId
+                PBRMasterNode.PositionSlotId,
+                PBRMasterNode.VertNormalSlotId,
+                PBRMasterNode.VertTangentSlotId
             },
             pixelPorts = new List<int>()
             {
@@ -342,7 +350,9 @@ namespace UnityEditor.Rendering.Universal
             var baseActiveFields = activeFields.baseInstance;
 
             // Graph Vertex
-            if(masterNode.IsSlotConnected(PBRMasterNode.PositionSlotId))
+            if(masterNode.IsSlotConnected(PBRMasterNode.PositionSlotId) || 
+               masterNode.IsSlotConnected(PBRMasterNode.VertNormalSlotId) || 
+               masterNode.IsSlotConnected(PBRMasterNode.VertTangentSlotId))
             {
                 baseActiveFields.Add("features.graphVertex");
             }
