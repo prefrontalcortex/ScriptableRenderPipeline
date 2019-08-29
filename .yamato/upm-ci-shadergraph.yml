@@ -26,7 +26,7 @@ projects:
     packagename: com.unity.shadergraph
 win_apis:
   - name: DX11
-    cmd: -force-d3d11
+    cmd: 
   - name: Vulkan
     cmd: -force-vulkan
 mac_apis:
