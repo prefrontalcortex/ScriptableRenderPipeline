@@ -3413,7 +3413,9 @@ namespace UnityEngine.Rendering.HighDefinition
             HDRaytracingEnvironment rtEnvironement = m_RayTracingManager.CurrentEnvironment();
             if (hdCamera.frameSettings.IsEnabled(FrameSettingsField.RayTracing) && rtEnvironement != null && settings.rayTracing.value)
             {
+                hdCamera.xr.StartSinglePass(cmd, hdCamera.camera, renderContext);
                 RenderRayTracedReflections(hdCamera, cmd, m_SsrLightingTexture, renderContext, m_FrameCount);
+                hdCamera.xr.StopSinglePass(cmd, hdCamera.camera, renderContext);
             }
             else
 #endif

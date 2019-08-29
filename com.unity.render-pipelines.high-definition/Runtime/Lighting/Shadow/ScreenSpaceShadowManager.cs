@@ -320,17 +320,19 @@ namespace UnityEngine.Rendering.HighDefinition
                         cmd.SetComputeTextureParam(shadowsCompute, shadowComputeKernel, HDShaderIDs._RaytracingDirectionBuffer, m_RaytracingDirectionBuffer);
                         cmd.SetComputeTextureParam(shadowsCompute, shadowComputeKernel, HDShaderIDs._RaytracingDistanceBuffer, m_RaytracingDistanceBuffer);
                         cmd.SetComputeTextureParam(shadowsCompute, shadowComputeKernel, HDShaderIDs._AnalyticProbBuffer, m_AnalyticProbBuffer);
-                        cmd.DispatchCompute(shadowsCompute, shadowComputeKernel, numTilesX, numTilesY, 1);
+                        cmd.DispatchCompute(shadowsCompute, shadowComputeKernel, numTilesX, numTilesY, hdCamera.viewCount);
 
                         // This pass will use the previously generated sample and add it to the integration buffer
                         cmd.SetRayTracingBufferParam(shadowRayTrace, HDShaderIDs._LightDatas, m_LightLoopLightData.lightData);
+                        cmd.SetRayTracingIntParam(shadowRayTrace, HDShaderIDs._RayCountEnabled, m_RayTracingManager.rayCountManager.RayCountIsEnabled());
+                        cmd.SetRayTracingTextureParam(shadowRayTrace, HDShaderIDs._RayCountTexture, m_RayTracingManager.rayCountManager.GetRayCountTexture());
                         cmd.SetRayTracingTextureParam(shadowRayTrace, HDShaderIDs._DepthTexture, m_SharedRTManager.GetDepthStencilBuffer());
                         cmd.SetRayTracingTextureParam(shadowRayTrace, HDShaderIDs._RaytracedAreaShadowSample, m_DenoiseBuffer1);
                         cmd.SetRayTracingTextureParam(shadowRayTrace, HDShaderIDs._RaytracedAreaShadowIntegration, m_DenoiseBuffer0);
                         cmd.SetRayTracingTextureParam(shadowRayTrace, HDShaderIDs._RaytracingDirectionBuffer, m_RaytracingDirectionBuffer);
                         cmd.SetRayTracingTextureParam(shadowRayTrace, HDShaderIDs._RaytracingDistanceBuffer, m_RaytracingDistanceBuffer);
                         cmd.SetRayTracingTextureParam(shadowRayTrace, HDShaderIDs._AnalyticProbBuffer, m_AnalyticProbBuffer);
-                        cmd.DispatchRays(shadowRayTrace, m_RayGenAreaShadowSingleName, (uint)hdCamera.actualWidth, (uint)hdCamera.actualHeight, 1);
+                        cmd.DispatchRays(shadowRayTrace, m_RayGenAreaShadowSingleName, (uint)hdCamera.actualWidth, (uint)hdCamera.actualHeight, (uint)hdCamera.viewCount);
 
                         // Let's do the following samples (if any)
                         for(int sampleIndex = 1; sampleIndex < currentAdditionalLightData.numRayTracingSamples; ++sampleIndex)
@@ -355,17 +357,19 @@ namespace UnityEngine.Rendering.HighDefinition
                             cmd.SetComputeTextureParam(shadowsCompute, shadowComputeKernel, HDShaderIDs._RaytracingDirectionBuffer, m_RaytracingDirectionBuffer);
                             cmd.SetComputeTextureParam(shadowsCompute, shadowComputeKernel, HDShaderIDs._RaytracingDistanceBuffer, m_RaytracingDistanceBuffer);
                             cmd.SetComputeTextureParam(shadowsCompute, shadowComputeKernel, HDShaderIDs._AnalyticProbBuffer, m_AnalyticProbBuffer);
-                            cmd.DispatchCompute(shadowsCompute, shadowComputeKernel, numTilesX, numTilesY, 1);
+                            cmd.DispatchCompute(shadowsCompute, shadowComputeKernel, numTilesX, numTilesY, hdCamera.viewCount);
 
                             // This pass will use the previously generated sample and add it to the integration buffer
                             cmd.SetRayTracingBufferParam(shadowRayTrace, HDShaderIDs._LightDatas, m_LightLoopLightData.lightData);
+                            cmd.SetRayTracingIntParam(shadowRayTrace, HDShaderIDs._RayCountEnabled, m_RayTracingManager.rayCountManager.RayCountIsEnabled());
+                            cmd.SetRayTracingTextureParam(shadowRayTrace, HDShaderIDs._RayCountTexture, m_RayTracingManager.rayCountManager.GetRayCountTexture());
                             cmd.SetRayTracingTextureParam(shadowRayTrace, HDShaderIDs._DepthTexture, m_SharedRTManager.GetDepthStencilBuffer());
                             cmd.SetRayTracingTextureParam(shadowRayTrace, HDShaderIDs._RaytracedAreaShadowSample, m_DenoiseBuffer1);
                             cmd.SetRayTracingTextureParam(shadowRayTrace, HDShaderIDs._RaytracedAreaShadowIntegration, m_DenoiseBuffer0);
                             cmd.SetRayTracingTextureParam(shadowRayTrace, HDShaderIDs._RaytracingDirectionBuffer, m_RaytracingDirectionBuffer);
                             cmd.SetRayTracingTextureParam(shadowRayTrace, HDShaderIDs._RaytracingDistanceBuffer, m_RaytracingDistanceBuffer);
                             cmd.SetRayTracingTextureParam(shadowRayTrace, HDShaderIDs._AnalyticProbBuffer, m_AnalyticProbBuffer);
-                            cmd.DispatchRays(shadowRayTrace, m_RayGenAreaShadowSingleName, (uint)hdCamera.actualWidth, (uint)hdCamera.actualHeight, 1);
+                            cmd.DispatchRays(shadowRayTrace, m_RayGenAreaShadowSingleName, (uint)hdCamera.actualWidth, (uint)hdCamera.actualHeight, (uint)hdCamera.viewCount);
                         }
                     }
                     else
@@ -386,7 +390,7 @@ namespace UnityEngine.Rendering.HighDefinition
                         cmd.SetRayTracingTextureParam(shadowRayTrace, HDShaderIDs._AreaCookieTextures, m_TextureCaches.areaLightCookieManager.GetTexCache());
                         cmd.SetRayTracingTextureParam(shadowRayTrace, HDShaderIDs._AnalyticProbBuffer, m_AnalyticProbBuffer);
                         cmd.SetRayTracingTextureParam(shadowRayTrace, HDShaderIDs._RaytracedAreaShadowIntegration, m_DenoiseBuffer0);
-                        cmd.DispatchRays(shadowRayTrace, m_RayGenAreaShadowName, (uint)hdCamera.actualWidth, (uint)hdCamera.actualHeight, 1);
+                        cmd.DispatchRays(shadowRayTrace, m_RayGenAreaShadowName, (uint)hdCamera.actualWidth, (uint)hdCamera.actualHeight, (uint)hdCamera.viewCount);
                     }
                 }
 
@@ -406,17 +410,17 @@ namespace UnityEngine.Rendering.HighDefinition
                     cmd.SetComputeTextureParam(shadowFilter, applyTAAKernel, HDShaderIDs._AnalyticHistoryBuffer, areaAnalyticHistoryArray);
                     cmd.SetComputeTextureParam(shadowFilter, applyTAAKernel, HDShaderIDs._DenoiseInputTexture, m_DenoiseBuffer0);
                     cmd.SetComputeTextureParam(shadowFilter, applyTAAKernel, HDShaderIDs._DenoiseOutputTextureRW, m_DenoiseBuffer1);
-                    cmd.DispatchCompute(shadowFilter, applyTAAKernel, numTilesX, numTilesY, 1);
+                    cmd.DispatchCompute(shadowFilter, applyTAAKernel, numTilesX, numTilesY, hdCamera.viewCount);
 
                     // Update the shadow history buffer
                     cmd.SetComputeTextureParam(shadowFilter, updateAnalyticHistory, HDShaderIDs._AnalyticProbBuffer, m_AnalyticProbBuffer);
                     cmd.SetComputeTextureParam(shadowFilter, updateAnalyticHistory, HDShaderIDs._AnalyticHistoryBuffer, areaAnalyticHistoryArray);
-                    cmd.DispatchCompute(shadowFilter, updateAnalyticHistory, numTilesX, numTilesY, 1);
+                    cmd.DispatchCompute(shadowFilter, updateAnalyticHistory, numTilesX, numTilesY, hdCamera.viewCount);
 
                     // Update the analytic history buffer
                     cmd.SetComputeTextureParam(shadowFilter, updateShadowHistory, HDShaderIDs._DenoiseInputTexture, m_DenoiseBuffer1);
                     cmd.SetComputeTextureParam(shadowFilter, updateShadowHistory, HDShaderIDs._AreaShadowHistoryRW, shadowHistoryArray);
-                    cmd.DispatchCompute(shadowFilter, updateShadowHistory, numTilesX, numTilesY, 1);
+                    cmd.DispatchCompute(shadowFilter, updateShadowHistory, numTilesX, numTilesY, hdCamera.viewCount);
 
                     if (currentAdditionalLightData.filterSizeTraced > 0)
                     {
@@ -428,7 +432,7 @@ namespace UnityEngine.Rendering.HighDefinition
                         // Noise estimation pre-pass
                         cmd.SetComputeTextureParam(shadowFilter, estimateNoiseKernel, HDShaderIDs._DenoiseInputTexture, m_DenoiseBuffer1);
                         cmd.SetComputeTextureParam(shadowFilter, estimateNoiseKernel, HDShaderIDs._DenoiseOutputTextureRW, m_DenoiseBuffer0);
-                        cmd.DispatchCompute(shadowFilter, estimateNoiseKernel, numTilesX, numTilesY, 1);
+                        cmd.DispatchCompute(shadowFilter, estimateNoiseKernel, numTilesX, numTilesY, hdCamera.viewCount);
 
                         // Reinject parameters for denoising
                         cmd.SetComputeTextureParam(shadowFilter, firstDenoiseKernel, HDShaderIDs._DepthTexture, m_SharedRTManager.GetDepthStencilBuffer());
@@ -438,7 +442,7 @@ namespace UnityEngine.Rendering.HighDefinition
                         // First denoising pass
                         cmd.SetComputeTextureParam(shadowFilter, firstDenoiseKernel, HDShaderIDs._DenoiseInputTexture, m_DenoiseBuffer0);
                         cmd.SetComputeTextureParam(shadowFilter, firstDenoiseKernel, HDShaderIDs._DenoiseOutputTextureRW, m_DenoiseBuffer1);
-                        cmd.DispatchCompute(shadowFilter, firstDenoiseKernel, numTilesX, numTilesY, 1);
+                        cmd.DispatchCompute(shadowFilter, firstDenoiseKernel, numTilesX, numTilesY, hdCamera.viewCount);
                     }
 
                     // Re-inject parameters for denoising
@@ -448,7 +452,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
                     // Second (and final) denoising pass
                     cmd.SetComputeTextureParam(shadowFilter, secondDenoiseKernel, HDShaderIDs._DenoiseInputTexture, m_DenoiseBuffer1);
-                    cmd.DispatchCompute(shadowFilter, secondDenoiseKernel, numTilesX, numTilesY, 1);
+                    cmd.DispatchCompute(shadowFilter, secondDenoiseKernel, numTilesX, numTilesY, hdCamera.viewCount);
                 }
             }
             return true;
