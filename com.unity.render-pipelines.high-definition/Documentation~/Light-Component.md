@@ -179,7 +179,7 @@ Unity exposes extra properties in the **Shadows** section depending on the **Mod
 
 | **Property**                | **Description**                                              |
 | --------------------------- | ------------------------------------------------------------ |
-| **Enable**                  | Enable the checkbox to add shadows to this Light.            |
+| **Enable**                  | Enable the checkbox to let this Light cast shadows.          |
 | **Update Mode**             | Use the drop-down to select the mode that HDRP uses to determine when to update a shadow map.<br />For information on the modes available, see the [Shadows in HDRP documentation](Shadows-in-HDRP.html#ShadowUpdateMode). |
 | **Resolution**              | The resolution of this Light’s shadow maps. Measured in pixels. A higher resolution increases the fidelity of shadows at the cost of GPU performance and memory usage, so if you experience any performance issues, try using a lower value. |
 | **Near Plane**              | The distance, in meters, from the Light that GameObjects begin to cast shadows. |
