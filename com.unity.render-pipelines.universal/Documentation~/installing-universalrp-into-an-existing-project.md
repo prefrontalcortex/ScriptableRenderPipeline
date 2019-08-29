@@ -12,3 +12,4 @@ Before you can start using Universal RP, you must configure it by creating a Scr
 **Note:** Switching to Universal RP in an existing Project consumes a lot of time and resources. Universal RP uses custom lit shaders and is not compatible with the Built-in Unity lit shaders. You will have to manually change or convert many elements. Instead, consider [starting a new Project with Universal RP](creating-a-new-project-with-universalrp.md).
 
 **Note:** The Universal Render Pipeline uses its own [post-processing](integration-with-post-processing.md). If you have the post-processing version 2 package installed in your Project already, you need to delete it before you upgrade.
+

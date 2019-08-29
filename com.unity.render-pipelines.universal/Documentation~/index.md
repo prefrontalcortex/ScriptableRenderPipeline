@@ -13,10 +13,11 @@ The Universal RP is supported on the following platforms:
 * XBox One
 * PlayStation4
 * Nintendo Switch
+* WebGL
 * All current VR platforms
 
 The Universal Render Pipeline is available via two templates: Universal RP and Universal RP-VR. The  Universal RP-VR comes with pre-enabled settings specifically for VR. The documentation for both render pipelines is the same. For any questions regarding Universal RP-VR, see the Universal RP documentation.
 
-**Note:**  Built-in and custom Lit Shaders do not work with the Universal Render Pipeline. Instead, Universal RP has a new set of standard shaders. If you upgrade a current Project to Universal RP, you can upgrade built-in shaders to the new ones.
+**Note:**  Built-in and custom Lit Shaders do not work with the Universal Render Pipeline. Instead, Universal RP has a new set of standard Shaders. If you upgrade a current Project to Universal RP, you can [upgrade built-in Shaders to the Universal RP ones](upgrading-your-shaders.md).
 
-**Note:** Projects made using Universal RP are not compatible with the High Definition Render Pipeline or the built-in Unity rendering pipeline. Before you start development, you must decide which render pipeline to use in your Project. 
+**Note:** Projects made using Universal RP are not compatible with the High Definition Render Pipeline or the Built-in Unity render¢pipeline. Before you start development, you must decide which render pipeline to use in your Project. 
