@@ -167,7 +167,7 @@ These settings define the volumetric behavior of this Light. Alter these setting
 
 Use the Shadows section to adjust the Shadows cast by this Light. HDRP currently does not support shadowing **Tube** Lights. Because of this, Unity does not expose the **Shadows** drop-down section in the Inspector when you select either of this **Type**. The Light **Types** that HDRP does support shadowing for (**Spot**, **Directional**, and **Point**) share almost all of their properties.
 
-Unity exposes extra properties in the **Shadows** section depending on the **Mode** you set in the [General](#GeneralProperties) section. It also exposes extra properties depending on the **Filtering Quality** set in your Unity Project’s [HDRP Asset](HDRP-Asset.html). To change the **Filtering Quality** property, navigate to your Project’s **HDRP Asset > Shadows** and use the **Filtering Quality** drop-down  to select the shadow filtering mode. Setting **Filtering Quality** to **High** or **Very High** exposes extra properties in the Light Inspector’s **Shadow** drop-down section.
+Unity exposes extra properties in the **Shadows** section depending on the **Mode** you set in the [General](#GeneralProperties) section. It also exposes extra properties depending on the **Filtering Quality** set in your Unity Project’s [HDRP Asset](HDRP-Asset.html). To change the **Filtering Quality** property, navigate to your Project’s **HDRP Asset > Shadows** and use the **Filtering Quality** drop-down  to select the shadow filtering mode. Setting **Filtering Quality** to **High** exposes extra properties in the Light Inspector’s **Shadow** drop-down section.
 
 &#8226; For more information on shadow filtering in HDRP, see the documentation on [Shadow Filtering](Shadows-in-HDRP.html#ShadowFiltering).
 
@@ -204,16 +204,6 @@ In your [HDRP Asset](HDRP-Asset.html), select **High** from the **Filtering Qual
 | **Blocker Sample Count**       | The number of samples HDRP uses to evaluate the distance between the pixel receiving the shadow and the shadow caster. Higher values give better accuracy. |
 | **Filter Sample Count**        | The number of samples HDRP uses to blur shadows. Higher values give smoother results. |
 | **Minimal size of the filter** | The minimum size of the whole shadow’s blur effect, no matter the distance between the pixel and the shadow caster. Higher values give blurrier results. |
-
-##### Very High Filtering Quality properties
-
-In your [HDRP Asset](HDRP-Asset.html), select **Very High** from the **Filtering Quality** drop-down to expose the following properties. These properties only apply to Directional Lights. Spot and Point Lights use **High** when you select the **Very High** option from the **Filtering Quality** drop-down. 
-
-| **Property**       | **Description**                                              |
-| ------------------ | ------------------------------------------------------------ |
-| **Kernel size**    | The size of the kernel that HDRP uses to process filtering. Larger values make shadows appear softer. |
-| **Light Angle**    | Represents the radius of the sun in the sky. It controls the acceleration of the shadow softness. |
-| **Max Depth Bias** | The depth bias value for the maximum  region size that the kernel can use. |
 
 ##### Contact Shadows
 

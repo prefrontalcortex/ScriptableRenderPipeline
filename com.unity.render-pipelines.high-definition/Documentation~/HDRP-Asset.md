@@ -167,7 +167,6 @@ These settings adjust the size of the shadow mask. Smaller values causes Unity t
 | **Low**               | &#8226; **Point/Spot Lights**: Percentage Closer Filtering (PCF) 3x3 (4 taps).<br />&#8226; **Directional Lights**: PCF Tent 5x5 (9 taps).<br />&#8226; **Area Lights**: EVSM. |
 | **Medium**            | &#8226; **Point/Spot Lights**: PCF 5x5 (9 taps).<br />&#8226; **Directional Lights**: PCF Tent 5x5 (9 taps).<br />&#8226; **Area Lights**: EVSM. |
 | **High**              | &#8226;**Point/Spot/Directional Lights**: Percentage Closer Soft Shadow (PCSS). You can change the sample count to decrease the quality of these shadows. This decreases the resource intensity of this algorithm. To change the sample count for shadows cast by that Light, set the **Filter Sample Count** in the Inspector of each Light component.<br />&#8226; **Area Lights**: EVSM. |
-| **Very High**         | &#8226; **Point/Spot**: Use **High** for their **Filtering Quality**.<br />&#8226; **Directional Lights**: Improve Moment Shadows.<br />&#8226; **Area Lights**: EVSM. |
 
 The PCF algorithm applies a fixed size blur. PCSS and Improved Moment Shadows algorithms apply a different blur size depending on the distance between the shadowed pixel and the shadow caster. This results in a more realistic shadow, that is also more resource intensive to compute.
 
