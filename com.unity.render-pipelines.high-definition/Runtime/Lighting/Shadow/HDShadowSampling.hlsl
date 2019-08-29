@@ -9,16 +9,16 @@
 //  PCF Filtering methods
 // ------------------------------------------------------------------
 
-real SampleShadow_PCF_Tent_3x3(float4 shadowAtlasSize, float3 coord, Texture2D tex, SamplerComparisonState compSamp, float depthBias)
+float SampleShadow_PCF_Tent_3x3(float4 shadowAtlasSize, float3 coord, Texture2D tex, SamplerComparisonState compSamp, float depthBias)
 {
 #if SHADOW_USE_DEPTH_BIAS == 1
     // add the depth bias
     coord.z += depthBias;
 #endif
 
-    real shadow = 0.0;
-    real fetchesWeights[4];
-    real2 fetchesUV[4];
+    float shadow = 0.0;
+    float fetchesWeights[4];
+    float2 fetchesUV[4];
 
     SampleShadow_ComputeSamples_Tent_3x3(shadowAtlasSize, coord.xy, fetchesWeights, fetchesUV);
     for (int i = 0; i < 4; i++)
@@ -33,16 +33,16 @@ real SampleShadow_PCF_Tent_3x3(float4 shadowAtlasSize, float3 coord, Texture2D t
 //
 
 // shadowAtlasSize.xy is the shadow atlas size in pixel and shadowAtlasSize.zw is rcp(shadow atlas size)
-real SampleShadow_PCF_Tent_5x5(float4 shadowAtlasSize, float3 coord, Texture2D tex, SamplerComparisonState compSamp, float depthBias)
+float SampleShadow_PCF_Tent_5x5(float4 shadowAtlasSize, float3 coord, Texture2D tex, SamplerComparisonState compSamp, float depthBias)
 {
 #if SHADOW_USE_DEPTH_BIAS == 1
     // add the depth bias
     coord.z += depthBias;
 #endif
 
-    real shadow = 0.0;
-    real fetchesWeights[9];
-    real2 fetchesUV[9];
+    float shadow = 0.0;
+    float fetchesWeights[9];
+    float2 fetchesUV[9];
 
     SampleShadow_ComputeSamples_Tent_5x5(shadowAtlasSize, coord.xy, fetchesWeights, fetchesUV);
 
@@ -81,16 +81,16 @@ real SampleShadow_PCF_Tent_5x5(float4 shadowAtlasSize, float3 coord, Texture2D t
 //
 //                  7x7 tent PCF sampling (16 taps)
 //
-real SampleShadow_PCF_Tent_7x7(float4 shadowAtlasSize, float3 coord, Texture2D tex, SamplerComparisonState compSamp, float depthBias)
+float SampleShadow_PCF_Tent_7x7(float4 shadowAtlasSize, float3 coord, Texture2D tex, SamplerComparisonState compSamp, float depthBias)
 {
 #if SHADOW_USE_DEPTH_BIAS == 1
     // add the depth bias
     coord.z += depthBias;
 #endif
 
-    real shadow = 0.0;
-    real fetchesWeights[16];
-    real2 fetchesUV[16];
+    float shadow = 0.0;
+    float fetchesWeights[16];
+    float2 fetchesUV[16];
 
     SampleShadow_ComputeSamples_Tent_7x7(shadowAtlasSize, coord.xy, fetchesWeights, fetchesUV);
 
@@ -285,7 +285,7 @@ float SampleShadow_PCSS(float3 tcs, float2 posSS, float2 scale, float2 offset, f
     //1) Blocker Search
     float averageBlockerDepth = 0.0;
     float numBlockers         = 0.0;
-    if (!BlockerSearch(averageBlockerDepth, numBlockers, shadowSoftness + 0.000001, tcs, sampleJitter, tex, samp, blockerSampleCount)) 
+    if (!BlockerSearch(averageBlockerDepth, numBlockers, shadowSoftness + 0.000001, tcs, sampleJitter, tex, samp, blockerSampleCount))
         return 1.0;
 
     //2) Penumbra Estimation
@@ -297,9 +297,9 @@ float SampleShadow_PCSS(float3 tcs, float2 posSS, float2 scale, float2 offset, f
 }
 
 // Note this is currently not available as an option, but is left here to show what needs including if IMS is to be used.
-// Also, please note that the UI for the IMS parameters has been deleted, but the parameters are still in the relevant data structures. 
+// Also, please note that the UI for the IMS parameters has been deleted, but the parameters are still in the relevant data structures.
 // To make use of IMS, please make sure GetDirectionalShadowAlgorithm returns DirectionalShadowAlgorithm.IMS and that there is a UI for the parameters kernelSize, lightAngle and maxDepthBias
-// These parameters need to be set in the shadowData.shadowFilterParams0 as follow: 
+// These parameters need to be set in the shadowData.shadowFilterParams0 as follow:
 //  shadowData.shadowFilterParams0.x = shadowRequest.kernelSize;
 //  shadowData.shadowFilterParams0.y = shadowRequest.lightAngle;
 //  shadowData.shadowFilterParams0.z = shadowRequest.maxDepthBias;
