@@ -81,5 +81,3 @@ All_{{ project.name }}:
   {% endfor %}
   {% endfor %}
   {% endfor %}
-  
-{% endfor %}
