@@ -53,8 +53,10 @@ RWTexture2DArray<float>     _ScreenSpaceShadowsTextureRW;
 
 // Prepass that evaluates the data required for the ray tracing
 [numthreads(RAYTRACING_SHADOW_TILE_SIZE, RAYTRACING_SHADOW_TILE_SIZE, 1)]
-void RaytracingAreaShadowPrepass(uint2 groupThreadId : SV_GroupThreadID, uint2 groupId : SV_GroupID)
+void RaytracingAreaShadowPrepass(uint3 dispatchThreadId : SV_DispatchThreadID, uint2 groupThreadId : SV_GroupThreadID, uint2 groupId : SV_GroupID)
 {
+    UNITY_XR_ASSIGN_VIEW_INDEX(dispatchThreadId.z);
+
     // Compute the pixel position to process
     uint2 currentCoord = groupId * RAYTRACING_SHADOW_TILE_SIZE + groupThreadId;
 
@@ -217,8 +219,10 @@ void RaytracingAreaShadowPrepass(uint2 groupThreadId : SV_GroupThreadID, uint2 g
 
 // Prepass that evaluates the data required for the ray tracing
 [numthreads(RAYTRACING_SHADOW_TILE_SIZE, RAYTRACING_SHADOW_TILE_SIZE, 1)]
-void RaytracingAreaShadowNewSample(uint2 groupThreadId : SV_GroupThreadID, uint2 groupId : SV_GroupID)
+void RaytracingAreaShadowNewSample(uint3 dispatchThreadId : SV_DispatchThreadID, uint2 groupThreadId : SV_GroupThreadID, uint2 groupId : SV_GroupID)
 {
+    UNITY_XR_ASSIGN_VIEW_INDEX(dispatchThreadId.z);
+
     // Compute the pixel position to process
     uint2 currentCoord = groupId * RAYTRACING_SHADOW_TILE_SIZE + groupThreadId;
 
