@@ -60,7 +60,6 @@ win_apis:
 {% endfor %}    
 {% endfor %}
 {% endfor %}
-{% endfor %}
 
 
 
@@ -81,3 +80,4 @@ All_{{ project.name }}:
   {% endfor %}
   {% endfor %}
   {% endfor %}
+{% endfor %}
