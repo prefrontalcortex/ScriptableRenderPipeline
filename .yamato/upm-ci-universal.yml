@@ -25,7 +25,7 @@ projects:
     folder: UniversalGraphicsTest
 win_apis:
   - name: DX11
-    cmd: -force-d3d11
+    cmd: 
   - name: Vulkan
     cmd: -force-vulkan
 mac_apis:
@@ -81,7 +81,7 @@ mac_apis:
     {% if testplatform.name == "Standalone" %}
     - cd TestProjects/{{ project.folder }} && powershell -command "utr/utr {{ testplatform.args }}Windows64 --extra-editor-arg="-executemethod" --extra-editor-arg="CustomBuild.BuildWindows{{ win_api.name }}Linear" --testproject=. --editor-location=.Editor --artifacts_path=upm-ci~/test-results --timeout=1200"
     {% else %}
-    - cd TestProjects/{{ project.folder }} && powershell -command "utr/utr {{ testplatform.args }} --extra-editor-arg="{{ win_api.cmd }}" --testproject=. --editor-location=.Editor --artifacts_path=upm-ci~/test-results"
+    - cd TestProjects/{{ project.folder }} && powershell -command "utr/utr {{ testplatform.args }} --testproject=. --editor-location=.Editor --artifacts_path=upm-ci~/test-results"
     {% endif %}
   artifacts:
     logs:
@@ -150,7 +150,11 @@ All_{{ project.name }}:
   
   {% elsif platform.name == "Windows64" %}
   {% for win_api in win_apis %}
+  {% if win_api.name == "Vulkan" %}
+  #skip
+  {% else %}
     - .yamato/upm-ci-{{ project.name | downcase }}.yml#{{ project.name }}_{{ platform.name }}_{{ win_api.name }}_{{ testplatform.name }}_{{ editor.version }}
+  {% endif %}
   {% endfor %}
 
   {% else %}
