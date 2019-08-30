@@ -126,15 +126,19 @@ namespace UnityEngine.Rendering.HighDefinition
         {
             FrameSettingsHistory history = historyContainer.frameSettingsHistory;
             aggregatedFrameSettings = defaultFrameSettings;
+            bool updatedComponent = false;
+
             if (historyContainer != null && !historyContainer.Equals(null) && historyContainer.hasCustomFrameSettings)
             {
                 FrameSettings.Override(ref aggregatedFrameSettings, historyContainer.frameSettings, historyContainer.frameSettingsMask);
+                updatedComponent = history.customMask.mask != historyContainer.frameSettingsMask.mask;
                 history.customMask = historyContainer.frameSettingsMask;
             }
             history.overridden = aggregatedFrameSettings;
             FrameSettings.Sanitize(ref aggregatedFrameSettings, camera, supportedFeatures);
             
-            bool updatedComponent = history.sanitazed != aggregatedFrameSettings;
+            history.hasDebug = history.debug != aggregatedFrameSettings;
+            updatedComponent |= history.sanitazed != aggregatedFrameSettings;
             bool dirtyDebugData = !history.hasDebug || updatedComponent;
 
             history.sanitazed = aggregatedFrameSettings;
@@ -151,7 +155,6 @@ namespace UnityEngine.Rendering.HighDefinition
             }
 
             aggregatedFrameSettings = history.debug;
-            history.hasDebug = history.debug != history.sanitazed;
             historyContainer.frameSettingsHistory = history;
         }
 

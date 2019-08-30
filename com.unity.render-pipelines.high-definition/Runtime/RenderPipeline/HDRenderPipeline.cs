@@ -2261,7 +2261,7 @@ namespace UnityEngine.Rendering.HighDefinition
             FrameSettings currentFrameSettings = new FrameSettings();
             // Compute the FrameSettings actually used to draw the frame
             // FrameSettingsHistory do the same while keeping all step of FrameSettings aggregation in memory for DebugMenu
-            if (m_FrameSettingsHistoryEnabled && camera.cameraType != CameraType.Preview)
+            if (m_FrameSettingsHistoryEnabled && camera.cameraType != CameraType.Preview && camera.cameraType != CameraType.Reflection)
                 FrameSettingsHistory.AggregateFrameSettings(ref currentFrameSettings, camera, additionalCameraData, m_Asset, m_DefaultAsset);
             else
                 FrameSettings.AggregateFrameSettings(ref currentFrameSettings, camera, additionalCameraData, m_Asset, m_DefaultAsset);
