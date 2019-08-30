@@ -254,7 +254,9 @@ namespace UnityEditor.Rendering.Universal
             // Port mask
             vertexPorts = new List<int>()
             {
-                PBRMasterNode.PositionSlotId
+                PBRMasterNode.PositionSlotId,
+                PBRMasterNode.VertNormalSlotId,
+                PBRMasterNode.VertTangentSlotId
             },
             pixelPorts = new List<int>()
             {
