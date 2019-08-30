@@ -25,7 +25,7 @@ projects:
     folder: PostProcessing
 win_apis:
   - name: DX11
-    cmd: 
+    cmd: -force-d3d11
   - name: Vulkan
     cmd: -force-vulkan
 mac_apis:
@@ -81,7 +81,7 @@ mac_apis:
     {% if testplatform.name == "Standalone" %}
     - cd TestProjects/{{ project.folder }} && powershell -command "utr/utr {{ testplatform.args }}Windows64 --extra-editor-arg="-executemethod" --extra-editor-arg="CustomBuild.BuildWindows{{ win_api.name }}Linear" --testproject=. --editor-location=.Editor --artifacts_path=upm-ci~/test-results --timeout=1200"
     {% else %}
-    - cd TestProjects/{{ project.folder }} && powershell -command "utr/utr {{ testplatform.args }} --testproject=. --editor-location=.Editor --artifacts_path=upm-ci~/test-results"
+    - cd TestProjects/{{ project.folder }} && powershell -command "utr/utr {{ testplatform.args }} --extra-editor-arg="{{ win_api.cmd }}" --testproject=. --editor-location=.Editor --artifacts_path=upm-ci~/test-results"
     {% endif %}
   artifacts:
     logs:
