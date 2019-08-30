@@ -21,9 +21,8 @@ namespace UnityEditor.Rendering.Universal
         ShaderPass m_UnlitPass = new ShaderPass
         {
             // Definition
-            displayName = "UnlitPass",
-            referenceName = "FORWARD_UNLIT",
-            lightMode = "UniversalForward",
+            displayName = "Pass",
+            referenceName = "SHADERPASS_FORWARDUNLIT",
             passInclude = "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/UnlitForwardPass.hlsl",
             varyingsInclude = "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/Varyings.hlsl",
             useInPreview = true,
@@ -67,7 +66,7 @@ namespace UnityEditor.Rendering.Universal
         {
             // Definition
             displayName = "DepthOnly",
-            referenceName = "DEPTHONLY",
+            referenceName = "SHADERPASS_DEPTHONLY",
             lightMode = "DepthOnly",
             passInclude = "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/DepthOnlyPass.hlsl",
             varyingsInclude = "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/Varyings.hlsl",
@@ -110,7 +109,7 @@ namespace UnityEditor.Rendering.Universal
         {
             // Definition
             displayName = "ShadowCaster",
-            referenceName = "SHADOWCASTER",
+            referenceName = "SHADERPASS_SHADOWCASTER",
             lightMode = "ShadowCaster",
             passInclude = "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/ShadowCasterPass.hlsl",
             varyingsInclude = "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/Varyings.hlsl",
@@ -278,9 +277,9 @@ namespace UnityEditor.Rendering.Universal
                 surfaceTags.GetTags(tagsBuilder, "UniversalPipeline");
                 subShader.AddShaderChunk(tagsBuilder.ToString());
                 
-                GenerateShaderPass(unlitMasterNode, m_ShadowCasterPass, mode, subShader, sourceAssetDependencyPaths);
-                GenerateShaderPass(unlitMasterNode, m_DepthOnlyPass, mode, subShader, sourceAssetDependencyPaths);
                 GenerateShaderPass(unlitMasterNode, m_UnlitPass, mode, subShader, sourceAssetDependencyPaths);
+                GenerateShaderPass(unlitMasterNode, m_ShadowCasterPass, mode, subShader, sourceAssetDependencyPaths);
+                GenerateShaderPass(unlitMasterNode, m_DepthOnlyPass, mode, subShader, sourceAssetDependencyPaths);   
             }
             subShader.Deindent();
             subShader.AddShaderChunk("}", true);

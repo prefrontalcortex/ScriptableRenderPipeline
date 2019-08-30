@@ -17,8 +17,8 @@ namespace UnityEditor.Experimental.Rendering.Universal
         ShaderPass m_LitPass = new ShaderPass
         {
             // Definition
-            displayName = "Lit Pass",
-            referenceName = "SPRITE_LIT",
+            displayName = "Sprite Lit",
+            referenceName = "SHADERPASS_SPRITELIT",
             lightMode = "Universal2D",
             passInclude = "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/SpriteLitPass.hlsl",
             varyingsInclude = "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/Varyings.hlsl",
@@ -51,7 +51,6 @@ namespace UnityEditor.Experimental.Rendering.Universal
                 "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl",
                 "Packages/com.unity.render-pipelines.universal/ShaderLibrary/ShaderGraphFunctions.hlsl",
                 "Packages/com.unity.render-pipelines.universal/Shaders/2D/Include/LightingUtility.hlsl",
-                "Packages/com.unity.render-pipelines.universal/Shaders/2D/Include/CombinedShapeLightShared.hlsl",
             },
             pragmas = new List<string>()
             {
@@ -73,7 +72,7 @@ namespace UnityEditor.Experimental.Rendering.Universal
         {
             // Definition
             displayName = "Sprite Normal",
-            referenceName = "SPRITE_NORMAL",
+            referenceName = "SHADERPASS_SPRITENORMAL",
             lightMode = "NormalsRendering",
             passInclude = "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/SpriteNormalPass.hlsl",
             varyingsInclude = "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/Varyings.hlsl",
@@ -119,7 +118,7 @@ namespace UnityEditor.Experimental.Rendering.Universal
         {
             // Definition
             displayName = "Sprite Forward",
-            referenceName = "SPRITE_FORWARD",
+            referenceName = "SHADERPASS_SPRITEFORWARD",
             lightMode = "UniversalForward",
             passInclude = "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/SpriteForwardPass.hlsl",
             varyingsInclude = "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/Varyings.hlsl",
@@ -267,6 +266,8 @@ namespace UnityEditor.Experimental.Rendering.Universal
                 subShader.AddShaderChunk(tagsBuilder.ToString());
 
                 GenerateShaderPass(litMasterNode, m_LitPass, mode, subShader, sourceAssetDependencyPaths);
+                GenerateShaderPass(litMasterNode, m_NormalPass, mode, subShader, sourceAssetDependencyPaths);
+                GenerateShaderPass(litMasterNode, m_ForwardPass, mode, subShader, sourceAssetDependencyPaths);
             }
             subShader.Deindent();
             subShader.AddShaderChunk("}", true);

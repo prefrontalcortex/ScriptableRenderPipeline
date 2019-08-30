@@ -1,4 +1,4 @@
-﻿#if SHADERPASS == SHADOWCASTER
+﻿#if defined(SHADERPASS_SHADOWCASTER)
     float3 _LightDirection;
 #endif
 
@@ -49,18 +49,14 @@ Varyings BuildVaryings(Attributes input)
 #endif
     
 #ifdef VARYINGS_NEED_NORMAL_WS
-    #if !SHADER_HINT_NICE_QUALITY
-        output.normalWS = normalize(normalWS);
-    #else
-        output.normalWS = normalWS;
-    #endif    
+    output.normalWS = NormalizeNormalPerVertex(normalWS);
 #endif
 
 #ifdef VARYINGS_NEED_TANGENT_WS
     output.tangentWS = normalize(tangentWS);
 #endif
 
-#if SHADERPASS == SHADOWCASTER
+#if defined(SHADERPASS_SHADOWCASTER)
     // Define shadow pass specific clip position for Universal
     output.positionCS = TransformWorldToHClip(ApplyShadowBias(positionWS, normalWS, _LightDirection));
     #if UNITY_REVERSED_Z
@@ -68,8 +64,8 @@ Varyings BuildVaryings(Attributes input)
     #else
         output.positionCS.z = max(output.positionCS.z, output.positionCS.w * UNITY_NEAR_CLIP_VALUE);
     #endif
-#elif SHADERPASS == META
-    output.positionCS = MetaVertexPosition(input.positionOS, input.uv1, input.uv1, unity_LightmapST, unity_DynamicLightmapST);
+#elif defined(SHADERPASS_META)
+    output.positionCS = MetaVertexPosition(float4(input.positionOS, 0), input.uv1, input.uv1, unity_LightmapST, unity_DynamicLightmapST);
 #else
     output.positionCS = TransformWorldToHClip(positionWS);
 #endif

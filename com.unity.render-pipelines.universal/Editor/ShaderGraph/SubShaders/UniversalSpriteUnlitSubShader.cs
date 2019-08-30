@@ -17,9 +17,7 @@ namespace UnityEditor.Experimental.Rendering.Universal
         ShaderPass m_UnlitPass = new ShaderPass
         {
             // Definition
-            displayName = "UnlitPass",
-            referenceName = "SPRITE_UNLIT",
-            lightMode = "UniversalForward",
+            referenceName = "SHADERPASS_SPRITEUNLIT",
             passInclude = "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/SpriteUnlitPass.hlsl",
             varyingsInclude = "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/Varyings.hlsl",
             useInPreview = true,
