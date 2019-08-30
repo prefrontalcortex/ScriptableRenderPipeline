@@ -23,7 +23,7 @@ namespace UnityEngine.Rendering.HighDefinition
         Camera,
         Custom,
     }
-    
+
     /// <summary>
     /// Render Queue filters for the DrawRenderers custom pass 
     /// </summary>
@@ -106,7 +106,7 @@ namespace UnityEngine.Rendering.HighDefinition
         /// Allow you to free custom buffers.
         /// </summary>
         protected virtual void Cleanup() {}
-        
+
         /// <summary>
         /// Create a custom pass to execute a fullscreen pass
         /// </summary>
@@ -156,6 +156,5 @@ namespace UnityEngine.Rendering.HighDefinition
                 targetDepthBuffer = targetDepthBuffer,
             };
         }
-
     }
 }

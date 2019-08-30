@@ -13,7 +13,6 @@ namespace UnityEngine.Rendering.HighDefinition
         // Used only for the UI to keep track of the toggle state
         public bool filterFoldout;
         public bool rendererFoldout;
-        public bool isHDRPShader;
 
         //Filter settings
         public CustomPassRenderQueueType renderQueueType = CustomPassRenderQueueType.AllOpaque;
@@ -33,7 +32,6 @@ namespace UnityEngine.Rendering.HighDefinition
                 if (m_HDRPShaderTags == null)
                 {
                     m_HDRPShaderTags = new List<ShaderTagId>() {
-                        HDShaderPassNames.s_ForwardName,
                         HDShaderPassNames.s_ForwardOnlyName,        // HD Unlit shader
                         HDShaderPassNames.s_SRPDefaultUnlitName,    // Cross SRP Unlit shader
                     };

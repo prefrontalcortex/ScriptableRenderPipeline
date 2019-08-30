@@ -51,9 +51,6 @@ namespace UnityEditor.Rendering.HighDefinition
 	    private int m_FilterLines = 3;
 	    private int m_MaterialLines = 2;
 
-	    // Serialized Properties
-		SerializedProperty      m_IsHDRPShader;
-
 		// Foldouts
 		SerializedProperty      m_FilterFoldout;
 		SerializedProperty      m_RendererFoldout;
@@ -70,7 +67,6 @@ namespace UnityEditor.Rendering.HighDefinition
 		SerializedProperty      m_SortingCriteria;
 
 	    ReorderableList         m_ShaderPassesList;
-		bool                    m_IsUnlitShader;
 
 	    protected override void Initialize(SerializedProperty customPass)
 	    {
@@ -78,7 +74,6 @@ namespace UnityEditor.Rendering.HighDefinition
 			m_FilterFoldout = customPass.FindPropertyRelative("filterFoldout");
 			m_RendererFoldout = customPass.FindPropertyRelative("rendererFoldout");
 			m_PassFoldout = customPass.FindPropertyRelative("passFoldout");
-            m_IsHDRPShader = customPass.FindPropertyRelative("isHDRPShader");
 
 		    // Filter props
 		    m_RenderQueue = customPass.FindPropertyRelative("renderQueueType");
@@ -106,9 +101,6 @@ namespace UnityEditor.Rendering.HighDefinition
 		    m_ShaderPassesList.drawHeaderCallback = (Rect testHeaderRect) => {
 			    EditorGUI.LabelField(testHeaderRect, Styles.shaderPassFilter);
 		    };
-
-			UpdateIsUnlitShader();
-			Undo.undoRedoPerformed += UpdateIsUnlitShader;
 	    }
 
 		protected override void DoPassGUI(SerializedProperty customPass, Rect rect)
@@ -135,10 +127,6 @@ namespace UnityEditor.Rendering.HighDefinition
 				EditorGUI.indentLevel--;
 			}
         }
-
-		void DoRenderersGUI(SerializedProperty property, Rect rect)
-		{
-		}
 
 	    void DoFilters(ref Rect rect)
 	    {
@@ -182,9 +170,9 @@ namespace UnityEditor.Rendering.HighDefinition
 		    // EditorGUI.PropertyField(rect, m_OverrideMaterial, Styles.overrideMaterial);
 			if (EditorGUI.EndChangeCheck())
 			{
-				UpdateIsUnlitShader();
 				var mat = m_OverrideMaterial.objectReferenceValue as Material;
-				m_IsHDRPShader.boolValue = m_IsUnlitShader || HDEditorUtils.IsHDRPShader(mat?.shader);
+                if (mat != null && m_OverrideMaterialPass.intValue >= mat.passCount)
+                    m_OverrideMaterialPass.intValue = mat.passCount - 1;
 			}
 
 		    if (m_OverrideMaterial.objectReferenceValue)
@@ -208,30 +196,34 @@ namespace UnityEditor.Rendering.HighDefinition
 
 			var mat = m_OverrideMaterial.objectReferenceValue as Material;
 			// We only draw the shader passes if we don't know which type of shader is used (aka user shaders)
-			if (m_IsUnlitShader)
+			if (IsUnlitShader())
 			{
 				EditorGUI.HelpBox(shaderPassesRect, Styles.unlitShaderMessage, MessageType.Info);
 				rect.y += Styles.defaultLineSpace;
 			}
-			else if (m_IsHDRPShader.boolValue)
+			else if (IsHDRPShader())
 			{
 				// Lit HDRP shader not supported
-				m_IsHDRPShader.boolValue = true;
 				EditorGUI.HelpBox(shaderPassesRect, Styles.hdrpLitShaderMessage, MessageType.Warning);
 				rect.y += Styles.defaultLineSpace;
 			}
 			else
 			{
-				m_IsHDRPShader.boolValue = false;
 				m_ShaderPassesList.DoList(shaderPassesRect);
 				rect.y += m_ShaderPassesList.GetHeight();
 			}
 		}
 
-		void UpdateIsUnlitShader()
+		bool IsUnlitShader()
 		{
 			var mat = m_OverrideMaterial.objectReferenceValue as Material;
-			m_IsUnlitShader = HDEditorUtils.IsUnlitHDRPShader(mat?.shader);
+			return HDEditorUtils.IsUnlitHDRPShader(mat?.shader);
+		}
+
+		bool IsHDRPShader()
+		{
+			var mat = m_OverrideMaterial.objectReferenceValue as Material;
+			return HDEditorUtils.IsHDRPShader(mat?.shader);
 		}
 
         protected override float GetCustomPassHeight(SerializedProperty customPass)

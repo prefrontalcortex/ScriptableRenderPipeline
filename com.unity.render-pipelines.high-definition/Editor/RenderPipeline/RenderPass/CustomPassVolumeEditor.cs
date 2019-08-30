@@ -148,7 +148,7 @@ namespace UnityEditor.Rendering.HighDefinition
             };
 
             m_CustomPassList.onAddCallback += (list) => {
-                // Undo.RegisterCreatedObjectUndo(target, "Create new Custom pass");
+                Undo.RegisterCompleteObjectUndo(target, "Remove custom pass");
 
                 var menu = new GenericMenu();
                 foreach (var customPassType in TypeCache.GetTypesDerivedFrom<CustomPass>())
@@ -157,17 +157,12 @@ namespace UnityEditor.Rendering.HighDefinition
                         passList.serializedObject.Update();
                     });
                 menu.ShowAsContext();
-
-                // TODO: cleanup
-				// passList.GetArrayElementAtIndex(list.count - 1) = customPass;
 			};
 
             m_CustomPassList.onRemoveCallback = (list) => {
-                Undo.RegisterCompleteObjectUndo(target, "Delete Custom pass");
-                var customPass = passList.GetArrayElementAtIndex(list.index);
-                ReorderableList.defaultBehaviours.DoRemoveButton(list);
-                passList.DeleteArrayElementAtIndex(list.index);
-                passList.serializedObject.ApplyModifiedProperties();
+                Undo.RegisterCompleteObjectUndo(target, "Remove custom pass");
+                m_Volume.customPasses.RemoveAt(list.index);
+                passList.serializedObject.Update();
             };
         }
 
