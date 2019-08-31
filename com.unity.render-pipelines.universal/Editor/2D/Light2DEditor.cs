@@ -73,8 +73,8 @@ namespace UnityEditor.Experimental.Rendering.Universal
             public static GUIContent generalBlendStyle = EditorGUIUtility.TrTextContent("Blend Style", "Specify the blend style");
             public static GUIContent generalLightOverlapMode = EditorGUIUtility.TrTextContent("Alpha Blend on Overlap", "Use alpha blending instead of additive blending when this light overlaps others");
             public static GUIContent generalLightOrder = EditorGUIUtility.TrTextContent("Light Order", "The relative order in which lights of the same blend style get rendered.");
-            public static GUIContent generalShadowIntensity = EditorGUIUtility.TrTextContent("Shadow Intensity", "Specify the shadow's darkness");
-            public static GUIContent generalShadowVolumeIntensity = EditorGUIUtility.TrTextContent("Shadow Volume Intensity", "Specify the shadow volume's darkness");
+            public static GUIContent generalShadowIntensity = EditorGUIUtility.TrTextContent("Shadow Intensity", "Controls the shadow's darkness.");
+            public static GUIContent generalShadowVolumeIntensity = EditorGUIUtility.TrTextContent("Shadow Volume Intensity", "Controls the shadow volume's darkness.");
             public static GUIContent generalSortingLayerPrefixLabel = EditorGUIUtility.TrTextContent("Target Sorting Layers", "Apply this light to the specified sorting layers.");
             public static GUIContent generalLightNoLightEnabled = EditorGUIUtility.TrTextContentWithIcon("No valid blend styles are enabled.", MessageType.Error);
 
