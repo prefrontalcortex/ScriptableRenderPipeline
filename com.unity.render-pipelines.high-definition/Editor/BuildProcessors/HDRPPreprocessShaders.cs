@@ -237,9 +237,8 @@ namespace UnityEditor.Rendering.HighDefinition
                 if ( hdPipelineAssets.Count == 0 || !hdPipelineAssets.Any(a => a.allowShaderVariantStripping) )
                     return;
 
-                int inputShaderVariantCount = inputData.Count;
-
-                for (int i = 0; i < inputData.Count; ++i)
+                var inputShaderVariantCount = inputData.Count;
+                for (int i = 0; i < inputShaderVariantCount; )
                 {
                     ShaderCompilerData input = inputData[i];
 
@@ -248,7 +247,7 @@ namespace UnityEditor.Rendering.HighDefinition
 
                     foreach (var hdAsset in hdPipelineAssets)
                     {
-                        var stripedByPreprocessor = false;
+                        var strippedByPreprocessor = false;
 
                         // Call list of strippers
                         // Note that all strippers cumulate each other, so be aware of any conflict here
@@ -256,12 +255,12 @@ namespace UnityEditor.Rendering.HighDefinition
                         {
                             if ( shaderPreprocessor.ShadersStripper(hdAsset, shader, snippet, input) )
                             {
-                                stripedByPreprocessor = true;
+                                strippedByPreprocessor = true;
                                 break;
                             }
                         }
 
-                        if (!stripedByPreprocessor)
+                        if (!strippedByPreprocessor)
                         {
                             removeInput = false;
                             break;
@@ -269,11 +268,16 @@ namespace UnityEditor.Rendering.HighDefinition
                     }
 
                     if (removeInput)
-                    {
-                        inputData.RemoveAt(i);
-                        i--;
-                    }
+                        inputData[i] = inputData[--inputShaderVariantCount];
+                    else
+                        ++i;
                 }
+
+                if(inputData is List<ShaderCompilerData> inputDataList)
+                    inputDataList.RemoveRange(inputShaderVariantCount, inputDataList.Count - inputShaderVariantCount);
+                else
+                    for (int i = inputData.Count - 1; i >= inputShaderVariantCount; --i)
+                        inputData.RemoveAt(i);
 
                 foreach (var hdAsset in hdPipelineAssets)
                 {
