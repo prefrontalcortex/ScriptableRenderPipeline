@@ -849,7 +849,6 @@ namespace UnityEngine.Rendering.HighDefinition
 
             if (!FrameSettingsHistory.IsRegistered(container))
             {
-                Debug.Log($"Register {container.panelName}");
                 var history = FrameSettingsHistory.RegisterDebug(container);
                 DebugManager.instance.RegisterData(history);
             }
@@ -867,8 +866,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
             if (FrameSettingsHistory.IsRegistered(container))
             {
-                Debug.Log($"Unegister {container.panelName}");
-                DebugManager.instance.UnregisterData(container.frameSettingsHistory);
+                DebugManager.instance.UnregisterData(container);
                 FrameSettingsHistory.UnRegisterDebug(container);
             }
         }

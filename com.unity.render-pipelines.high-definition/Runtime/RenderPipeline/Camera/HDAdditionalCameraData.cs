@@ -180,19 +180,33 @@ namespace UnityEngine.Rendering.HighDefinition
         FrameSettings IFrameSettingsHistoryContainer.frameSettings
             => m_RenderingPathCustomFrameSettings;
 
-        FrameSettingsHistory renderingPathHistory = new FrameSettingsHistory()
+        FrameSettingsHistory m_RenderingPathHistory = new FrameSettingsHistory()
         {
             defaultType = FrameSettingsRenderType.Camera
         };
 
         FrameSettingsHistory IFrameSettingsHistoryContainer.frameSettingsHistory
         {
-            get => renderingPathHistory;
-            set => renderingPathHistory = value;
+            get => m_RenderingPathHistory;
+            set
+            {
+                // do not loss the struct position so only change content
+                m_RenderingPathHistory.defaultType = value.defaultType;
+                m_RenderingPathHistory.customMask = value.customMask;
+                m_RenderingPathHistory.overridden = value.overridden;
+                m_RenderingPathHistory.sanitazed = value.sanitazed;
+                m_RenderingPathHistory.debug = value.debug;
+            }
         }
 
         string IFrameSettingsHistoryContainer.panelName
             => m_CameraRegisterName;
+        
+        Action IDebugData.GetReset()
+                //caution: we actually need to retrieve the right
+                //m_FrameSettingsHistory as it is a struct so no direct
+                // => m_FrameSettingsHistory.TriggerReset
+                => () => m_RenderingPathHistory.TriggerReset();
 
         AOVRequestDataCollection m_AOVRequestDataCollection = new AOVRequestDataCollection(null);
 
@@ -344,7 +358,7 @@ namespace UnityEngine.Rendering.HighDefinition
                 // Note camera's preview camera is registered with preview type but then change to game type that lead to issue.
                 // Do not attempt to not register them till this issue persist.
                 m_CameraRegisterName = name;
-                if (/*m_camera.cameraType != CameraType.Preview &&*/ m_camera.cameraType != CameraType.Reflection)
+                if (m_camera.cameraType != CameraType.Preview && m_camera.cameraType != CameraType.Reflection)
                 {
                     DebugDisplaySettings.RegisterCamera(this);
                 }
@@ -358,7 +372,7 @@ namespace UnityEngine.Rendering.HighDefinition
             {
                 // Note camera's preview camera is registered with preview type but then change to game type that lead to issue.
                 // Do not attempt to not register them till this issue persist.
-                if (/*m_camera.cameraType != CameraType.Preview &&*/ m_camera?.cameraType != CameraType.Reflection)
+                if (m_camera.cameraType != CameraType.Preview && m_camera?.cameraType != CameraType.Reflection)
                 {
                     DebugDisplaySettings.UnRegisterCamera(this);
                 }

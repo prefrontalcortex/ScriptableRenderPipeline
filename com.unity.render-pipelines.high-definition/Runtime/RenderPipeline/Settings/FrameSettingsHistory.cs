@@ -12,7 +12,7 @@ namespace UnityEngine.Rendering.HighDefinition
         RealtimeReflection
     }
 
-    internal interface IFrameSettingsHistoryContainer
+    internal interface IFrameSettingsHistoryContainer : IDebugData
     {
         FrameSettingsHistory frameSettingsHistory { get; set; }
         FrameSettingsOverrideMask frameSettingsMask { get; }
@@ -21,7 +21,7 @@ namespace UnityEngine.Rendering.HighDefinition
         string panelName { get; }
     }
 
-    struct FrameSettingsHistory : IDebugData
+    struct FrameSettingsHistory
     {
         internal static readonly string[] foldoutNames = { "Rendering", "Lighting", "Async Compute", "Light Loop" };
         static readonly string[] columnNames = { "Debug", "Sanitized", "Overridden", "Default" };
@@ -33,11 +33,19 @@ namespace UnityEngine.Rendering.HighDefinition
         //internal static Camera sceneViewCamera;
         class MinimalHistoryContainer : IFrameSettingsHistoryContainer
         {
-            FrameSettingsHistory frameSettingsHistory = new FrameSettingsHistory();
+            FrameSettingsHistory m_FrameSettingsHistory = new FrameSettingsHistory();
             FrameSettingsHistory IFrameSettingsHistoryContainer.frameSettingsHistory
             {
-                get => this.frameSettingsHistory;
-                set => this.frameSettingsHistory = value;
+                get => m_FrameSettingsHistory;
+                set
+                {
+                    // do not loss the struct position so only change content
+                    m_FrameSettingsHistory.defaultType = value.defaultType;
+                    m_FrameSettingsHistory.customMask = value.customMask;
+                    m_FrameSettingsHistory.overridden = value.overridden;
+                    m_FrameSettingsHistory.sanitazed = value.sanitazed;
+                    m_FrameSettingsHistory.debug = value.debug;
+                }
             }
 
             // never used as hasCustomFrameSettings forced to false
@@ -54,6 +62,12 @@ namespace UnityEngine.Rendering.HighDefinition
 
             string IFrameSettingsHistoryContainer.panelName
                 => "Scene Camera";
+
+            Action IDebugData.GetReset()
+                //caution: we actually need to retrieve the 
+                //m_FrameSettingsHistory as it is a struct so no direct
+                // => m_FrameSettingsHistory.TriggerReset
+                => () => m_FrameSettingsHistory.TriggerReset();
         }
         internal static IFrameSettingsHistoryContainer sceneViewFrameSettingsContainer = new MinimalHistoryContainer();
 #endif
@@ -295,7 +309,8 @@ namespace UnityEngine.Rendering.HighDefinition
 #endif
 
             GenerateFrameSettingsPanel(frameSettingsContainer.panelName, frameSettingsContainer);
-            return frameSettingsContainer.frameSettingsHistory;
+            containers.Add(frameSettingsContainer);
+            return frameSettingsContainer;
         }
 
         /// <summary>Unregister FrameSettingsHistory for DebugMenu</summary>
@@ -313,10 +328,10 @@ namespace UnityEngine.Rendering.HighDefinition
             return containers.Contains(container);
         }
 
-        void TriggerReset()
+        internal void TriggerReset()
         {
             debug = sanitazed;
+            hasDebug = false;
         }
-        Action IDebugData.GetReset() => TriggerReset;
     }
 }
