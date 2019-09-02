@@ -148,17 +148,26 @@ namespace UnityEngine.Rendering.Universal
 
             bool createColorTexture = RequiresIntermediateColorTexture(ref renderingData, cameraTargetDescriptor) || camera.forceIntoRenderTexture;
 
+            createColorTexture = false;
+
             // If camera requires depth and there's no depth pre-pass we create a depth texture that can be read
             // later by effect requiring it.
             bool createDepthTexture = cameraData.requiresDepthTexture && !requiresDepthPrepass;
             bool postProcessEnabled = cameraData.postProcessEnabled;
 
+            createDepthTexture = false;
+            postProcessEnabled = false;
+
             m_ActiveCameraColorAttachment = (createColorTexture) ? m_CameraColorAttachment : RenderTargetHandle.CameraTarget;
             m_ActiveCameraDepthAttachment = (createDepthTexture) ? m_CameraDepthAttachment : RenderTargetHandle.CameraTarget;
             bool intermediateRenderTexture = createColorTexture || createDepthTexture;
-            
-            if (intermediateRenderTexture)
+
+            intermediateRenderTexture = false;
+
+            if (intermediateRenderTexture) 
                 CreateCameraRenderTarget(context, ref cameraData);
+
+            //Debug.Log($"crColor: {createColorTexture} crDepth: {createDepthTexture} pp: {postProcessEnabled} interm: {intermediateRenderTexture}"); 
 
             ConfigureCameraTarget(m_ActiveCameraColorAttachment.Identifier(), m_ActiveCameraDepthAttachment.Identifier());
 
