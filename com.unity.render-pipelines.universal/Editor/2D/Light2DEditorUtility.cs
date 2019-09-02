@@ -93,7 +93,7 @@ namespace UnityEditor.Experimental.Rendering.Universal
 
         public static Renderer2DData GetRenderer2DData()
         {
-            UniversalRenderPipelineAsset pipelineAsset = UnityEngine.Rendering.GraphicsSettings.renderPipelineAsset as UniversalRenderPipelineAsset;
+            UniversalRenderPipelineAsset pipelineAsset = UniversalRenderPipeline.asset;
             Renderer2DData rendererData  = pipelineAsset != null ? pipelineAsset.scriptableRendererData as Renderer2DData : null;
             if(rendererData == null)
             {

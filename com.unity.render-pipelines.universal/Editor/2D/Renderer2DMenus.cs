@@ -70,21 +70,9 @@ namespace UnityEditor.Experimental.Rendering.Universal
             Analytics.Renderer2DAnalytics.instance.SendData(Analytics.AnalyticsDataTypes.k_LightDataString, lightData);
         }
 
-
         static bool CreateLightValidation()
         {
-            UniversalRenderPipeline pipeline = UnityEngine.Rendering.RenderPipelineManager.currentPipeline as UniversalRenderPipeline;
-            if (pipeline != null)
-            {
-                UniversalRenderPipelineAsset asset = UniversalRenderPipeline.asset;
-                if (asset != null)
-                {
-                    Renderer2DData assetData = Light2DEditorUtility.GetRenderer2DData();
-                    return assetData != null;
-                }
-            }
-
-            return false;
+            return Light2DEditorUtility.IsUsing2DRenderer();
         }
 
         [MenuItem("GameObject/Light/2D/Freeform Light 2D (Experimental)", false, -100)]
