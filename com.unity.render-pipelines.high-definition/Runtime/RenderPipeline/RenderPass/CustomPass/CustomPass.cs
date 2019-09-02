@@ -5,60 +5,57 @@ using UnityEngine.Experimental.Rendering;
 namespace UnityEngine.Rendering.HighDefinition
 {
     /// <summary>
-    /// List all the injection points available for HDRP
-    /// </summary>
-    public enum CustomPassInjectionPoint
-    {
-        BeforeRendering,
-        BeforeTransparent,
-        BeforePostProcess,
-        AfterPostProcess,
-    }
-
-    /// <summary>
-    /// Used to select the target buffer when executing the custom pass
-    /// </summary>
-    public enum CustomPassTargetBuffer
-    {
-        Camera,
-        Custom,
-    }
-
-    /// <summary>
-    /// Render Queue filters for the DrawRenderers custom pass 
-    /// </summary>
-    public enum CustomPassRenderQueueType
-    {
-        OpaqueNoAlphaTest,
-        OpaqueAlphaTest,
-        AllOpaque,
-        AfterPostProcessOpaque,
-        PreRefraction,
-        Transparent,
-        LowTransparent,
-        AllTransparent,
-        AllTransparentWithLowRes,
-        AfterPostProcessTransparent,
-        All,
-    }
-
-    /// <summary>
     /// Class that holds data and logic for the pass to be executed
     /// </summary>
     [System.Serializable]
     public abstract class CustomPass
     {
-        public string                   name = "Custom Pass";
-        public bool                     enabled = true;
-        public CustomPassTargetBuffer   targetColorBuffer;
-        public CustomPassTargetBuffer   targetDepthBuffer;
-        public ClearFlag                clearFlags;
-        public bool                     passFoldout;
+        public string         name = "Custom Pass";
+        public bool           enabled = true;
+        public TargetBuffer   targetColorBuffer;
+        public TargetBuffer   targetDepthBuffer;
+        public ClearFlag      clearFlags;
+        public bool           passFoldout;
 
         [System.NonSerialized]
         bool    isSetup = false;
 
-        internal void ExecuteInternal(ScriptableRenderContext renderContext, CommandBuffer cmd, HDCamera camera, CullingResults cullingResult, RTHandle cameraColorBuffer, RTHandle cameraDepthBuffer, RTHandle customColorBuffer, RTHandle customDepthBuffer)
+        /// <summary>
+        /// Used to select the target buffer when executing the custom pass
+        /// </summary>
+        public enum TargetBuffer
+        {
+            Camera,
+            Custom,
+        }
+
+        /// <summary>
+        /// Render Queue filters for the DrawRenderers custom pass 
+        /// </summary>
+        public enum RenderQueueType
+        {
+            OpaqueNoAlphaTest,
+            OpaqueAlphaTest,
+            AllOpaque,
+            AfterPostProcessOpaque,
+            PreRefraction,
+            Transparent,
+            LowTransparent,
+            AllTransparent,
+            AllTransparentWithLowRes,
+            AfterPostProcessTransparent,
+            All,
+        }
+
+        internal struct RenderTargets
+        {
+            public RenderTargetIdentifier  cameraColorBuffer;
+            public RenderTargetIdentifier  cameraDepthBuffer;
+            public RenderTargetIdentifier  customColorBuffer;
+            public RenderTargetIdentifier  customDepthBuffer;
+        }
+
+        internal void ExecuteInternal(ScriptableRenderContext renderContext, CommandBuffer cmd, HDCamera camera, CullingResults cullingResult, RenderTargets targets)
         {
             if (!isSetup)
             {
@@ -66,21 +63,21 @@ namespace UnityEngine.Rendering.HighDefinition
                 isSetup = true;
             }
 
-            SetCustomPassTarget(cmd, cameraColorBuffer, cameraDepthBuffer, customColorBuffer, customDepthBuffer);
+            SetCustomPassTarget(cmd, targets);
 
             Execute(renderContext, cmd, camera, cullingResult);
             
             // Set back the camera color buffer is we were using a custom buffer as target
-            if (targetDepthBuffer != CustomPassTargetBuffer.Camera)
-                CoreUtils.SetRenderTarget(cmd, cameraColorBuffer);
+            if (targetDepthBuffer != TargetBuffer.Camera)
+                CoreUtils.SetRenderTarget(cmd, targets.cameraColorBuffer);
         }
 
         internal void CleanupPassInternal() => Cleanup();
 
-        void SetCustomPassTarget(CommandBuffer cmd, RTHandle cameraColorBuffer, RTHandle cameraDepthBuffer, RTHandle customColorBuffer, RTHandle customDepthBuffer)
+        void SetCustomPassTarget(CommandBuffer cmd, RenderTargets targets)
         {
-            RTHandle colorBuffer = (targetColorBuffer == CustomPassTargetBuffer.Custom) ? customColorBuffer : cameraColorBuffer;
-            RTHandle depthBuffer = (targetDepthBuffer == CustomPassTargetBuffer.Custom) ? customDepthBuffer : cameraDepthBuffer;
+            RenderTargetIdentifier colorBuffer = (targetColorBuffer == TargetBuffer.Custom) ? targets.customColorBuffer : targets.cameraColorBuffer;
+            RenderTargetIdentifier depthBuffer = (targetDepthBuffer == TargetBuffer.Custom) ? targets.customDepthBuffer : targets.cameraDepthBuffer;
             CoreUtils.SetRenderTarget(cmd, colorBuffer, depthBuffer, clearFlags);
         }
 
@@ -110,12 +107,12 @@ namespace UnityEngine.Rendering.HighDefinition
         /// <summary>
         /// Create a custom pass to execute a fullscreen pass
         /// </summary>
-        /// <param name="fullScreenMaterial"></param>
+        /// <param name="fullScreenMaterial">The material to use for your fullscreen pass. It must have a shader based on the Custom Pass Fullscreen shader or equivalent</param>
         /// <param name="targetColorBuffer"></param>
         /// <param name="targetDepthBuffer"></param>
         /// <returns></returns>
-        public static CustomPass CreateFullScreenPass(Material fullScreenMaterial, CustomPassTargetBuffer targetColorBuffer = CustomPassTargetBuffer.Camera,
-            CustomPassTargetBuffer targetDepthBuffer = CustomPassTargetBuffer.Camera)
+        public static CustomPass CreateFullScreenPass(Material fullScreenMaterial, TargetBuffer targetColorBuffer = TargetBuffer.Camera,
+            TargetBuffer targetDepthBuffer = TargetBuffer.Camera)
         {
             return new FullScreenCustomPass()
             {
@@ -129,19 +126,19 @@ namespace UnityEngine.Rendering.HighDefinition
         /// <summary>
         /// Create a Custom Pass to render objects
         /// </summary>
-        /// <param name="queue"></param>
-        /// <param name="mask"></param>
-        /// <param name="overrideMaterial"></param>
-        /// <param name="overrideMaterialPassIndex"></param>
-        /// <param name="sorting"></param>
-        /// <param name="clearFlags"></param>
-        /// <param name="targetColorBuffer"></param>
-        /// <param name="targetDepthBuffer"></param>
+        /// <param name="queue">The render queue filter to select which object will be rendered</param>
+        /// <param name="mask">The layer mask to select which layer(s) will be rendered</param>
+        /// <param name="overrideMaterial">The replacement material to use when renering objects</param>
+        /// <param name="overrideMaterialPassIndex">The pass to use in the override material</param>
+        /// <param name="sorting">Sorting options when rendering objects</param>
+        /// <param name="clearFlags">Clear options when the target buffers are bound. Before executing the pass</param>
+        /// <param name="targetColorBuffer">Target Color buffer</param>
+        /// <param name="targetDepthBuffer">Target Depth buffer. Note: It's also the buffer which will do the Depth Test</param>
         /// <returns></returns>
-        public static CustomPass CreateDrawRenderersPass(CustomPassRenderQueueType queue, LayerMask mask,
+        public static CustomPass CreateDrawRenderersPass(RenderQueueType queue, LayerMask mask,
             Material overrideMaterial, int overrideMaterialPassIndex = 0, SortingCriteria sorting = SortingCriteria.CommonOpaque,
-            ClearFlag clearFlags = ClearFlag.None, CustomPassTargetBuffer targetColorBuffer = CustomPassTargetBuffer.Camera,
-            CustomPassTargetBuffer targetDepthBuffer = CustomPassTargetBuffer.Camera)
+            ClearFlag clearFlags = ClearFlag.None, TargetBuffer targetColorBuffer = TargetBuffer.Camera,
+            TargetBuffer targetDepthBuffer = TargetBuffer.Camera)
         {
             return new DrawRenderersCustomPass()
             {

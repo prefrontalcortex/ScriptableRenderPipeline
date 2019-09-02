@@ -99,10 +99,10 @@ namespace UnityEditor.Rendering.HighDefinition
 			rect.y += Styles.defaultLineSpace;
 			
 #if true
-			m_TargetColorBuffer.intValue = (int)(CustomPassTargetBuffer)EditorGUI.EnumPopup(rect, Styles.targetColorBuffer, (CustomPassTargetBuffer)m_TargetColorBuffer.intValue);
+			m_TargetColorBuffer.intValue = (int)(CustomPass.TargetBuffer)EditorGUI.EnumPopup(rect, Styles.targetColorBuffer, (CustomPass.TargetBuffer)m_TargetColorBuffer.intValue);
 			rect.y += Styles.defaultLineSpace;
 
-			m_TargetDepthBuffer.intValue = (int)(CustomPassTargetBuffer)EditorGUI.EnumPopup(rect, Styles.targetDepthBuffer, (CustomPassTargetBuffer)m_TargetDepthBuffer.intValue);
+			m_TargetDepthBuffer.intValue = (int)(CustomPass.TargetBuffer)EditorGUI.EnumPopup(rect, Styles.targetDepthBuffer, (CustomPass.TargetBuffer)m_TargetDepthBuffer.intValue);
 			rect.y += Styles.defaultLineSpace;
 			
 			m_ClearFlags.intValue = (int)(ClearFlag)EditorGUI.EnumPopup(rect, Styles.clearFlags, (ClearFlag)m_ClearFlags.intValue);

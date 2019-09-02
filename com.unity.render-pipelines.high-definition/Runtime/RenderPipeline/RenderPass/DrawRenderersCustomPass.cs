@@ -15,7 +15,7 @@ namespace UnityEngine.Rendering.HighDefinition
         public bool rendererFoldout;
 
         //Filter settings
-        public CustomPassRenderQueueType renderQueueType = CustomPassRenderQueueType.AllOpaque;
+        public CustomPass.RenderQueueType renderQueueType = CustomPass.RenderQueueType.AllOpaque;
         public string[] passNames = new string[1] { "Forward" };
         public LayerMask layerMask = -1;
         public SortingCriteria sortingCriteria = SortingCriteria.CommonOpaque;
@@ -80,21 +80,21 @@ namespace UnityEngine.Rendering.HighDefinition
         /// Returns the render queue range associated with the custom render queue type
         /// </summary>
         /// <returns></returns>
-        protected RenderQueueRange GetRenderQueueRange(CustomPassRenderQueueType type)
+        protected RenderQueueRange GetRenderQueueRange(CustomPass.RenderQueueType type)
         {
             switch (type)
             {
-                case CustomPassRenderQueueType.OpaqueNoAlphaTest: return HDRenderQueue.k_RenderQueue_OpaqueNoAlphaTest;
-                case CustomPassRenderQueueType.OpaqueAlphaTest: return HDRenderQueue.k_RenderQueue_OpaqueAlphaTest;
-                case CustomPassRenderQueueType.AllOpaque: return HDRenderQueue.k_RenderQueue_AllOpaque;
-                case CustomPassRenderQueueType.AfterPostProcessOpaque: return HDRenderQueue.k_RenderQueue_AfterPostProcessOpaque;
-                case CustomPassRenderQueueType.PreRefraction: return HDRenderQueue.k_RenderQueue_PreRefraction;
-                case CustomPassRenderQueueType.Transparent: return HDRenderQueue.k_RenderQueue_Transparent;
-                case CustomPassRenderQueueType.LowTransparent: return HDRenderQueue.k_RenderQueue_LowTransparent;
-                case CustomPassRenderQueueType.AllTransparent: return HDRenderQueue.k_RenderQueue_AllTransparent;
-                case CustomPassRenderQueueType.AllTransparentWithLowRes: return HDRenderQueue.k_RenderQueue_AllTransparentWithLowRes;
-                case CustomPassRenderQueueType.AfterPostProcessTransparent: return HDRenderQueue.k_RenderQueue_AfterPostProcessTransparent;
-                case CustomPassRenderQueueType.All:
+                case CustomPass.RenderQueueType.OpaqueNoAlphaTest: return HDRenderQueue.k_RenderQueue_OpaqueNoAlphaTest;
+                case CustomPass.RenderQueueType.OpaqueAlphaTest: return HDRenderQueue.k_RenderQueue_OpaqueAlphaTest;
+                case CustomPass.RenderQueueType.AllOpaque: return HDRenderQueue.k_RenderQueue_AllOpaque;
+                case CustomPass.RenderQueueType.AfterPostProcessOpaque: return HDRenderQueue.k_RenderQueue_AfterPostProcessOpaque;
+                case CustomPass.RenderQueueType.PreRefraction: return HDRenderQueue.k_RenderQueue_PreRefraction;
+                case CustomPass.RenderQueueType.Transparent: return HDRenderQueue.k_RenderQueue_Transparent;
+                case CustomPass.RenderQueueType.LowTransparent: return HDRenderQueue.k_RenderQueue_LowTransparent;
+                case CustomPass.RenderQueueType.AllTransparent: return HDRenderQueue.k_RenderQueue_AllTransparent;
+                case CustomPass.RenderQueueType.AllTransparentWithLowRes: return HDRenderQueue.k_RenderQueue_AllTransparentWithLowRes;
+                case CustomPass.RenderQueueType.AfterPostProcessTransparent: return HDRenderQueue.k_RenderQueue_AfterPostProcessTransparent;
+                case CustomPass.RenderQueueType.All:
                 default:
                     return HDRenderQueue.k_RenderQueue_All;
             }

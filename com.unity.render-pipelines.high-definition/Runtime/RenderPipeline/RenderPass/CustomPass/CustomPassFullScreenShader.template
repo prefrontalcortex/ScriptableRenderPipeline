@@ -20,6 +20,14 @@ Shader "FullScreen/#SCRIPTNAME#"
     //     float  linearDepth; // View space Z coordinate                              : [Near, Far]
     // };
 
+    // To sample custom buffers, you have access to these functions:
+    // But be careful, on most platforms you can't sample to the bound color buffer. It means that you
+    // can't use the SampleCustomColor when the pass color buffer is set to custom (and same for camera the buffer).
+    // float3 SampleCustomColor(float2 uv);
+    // float3 LoadCustomColor(uint2 pixelCoords);
+    // float LoadCustomDepth(uint2 pixelCoords);
+    // float SampleCustomDepth(float2 uv);
+
     // There are also a lot of utility function you can use inside Common.hlsl and Color.hlsl,
     // you can check them out in the source code of the core SRP package.
 
@@ -28,9 +36,13 @@ Shader "FullScreen/#SCRIPTNAME#"
         float depth = LoadCameraDepth(varyings.positionCS.xy);
         PositionInputs posInput = GetPositionInput(varyings.positionCS.xy, _ScreenSize.zw, depth, UNITY_MATRIX_I_VP, UNITY_MATRIX_V);
         float3 viewDirection = GetWorldSpaceNormalizeViewDir(posInput.positionWS);
+        float4 color = float4(0.0, 0.0, 0.0, 0.0);
 
-        // You can add your custom pass code here
-        float4 color = float4(posInput.positionNDC, 0.0, 1);
+        // Load the camera color buffer at the mip 0 if we're not at the before rendering injection point
+        if (_CustomPassInjectionPoint != CUSTOMPASSINJECTIONPOINT_BEFORE_RENDERING)
+            color = float4(CustomPassSampleCameraColor(posInput.positionNDC.xy, 0), 1);
+
+        // Add your custom pass code here
 
         return color;
     }

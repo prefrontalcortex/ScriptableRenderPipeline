@@ -1,3 +1,6 @@
+// For now we disable the filtering by shader pass.
+// #define SHOW_PASS_NAMES
+
 using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
@@ -116,8 +119,9 @@ namespace UnityEditor.Rendering.HighDefinition
 				DoMaterialOverride(ref rect);
 				rect.y += Styles.defaultLineSpace;
 
-				// For now we disable the filtering by shader pass
-				// DoShaderPassesList(ref rect);
+#if SHOW_PASS_NAMES
+				DoShaderPassesList(ref rect);
+#endif
 
                 // TODO: remove all this code when the fix for SerializedReference lands
 				// EditorGUI.PropertyField(rect, m_SortingCriteria, Styles.sortingCriteria);
@@ -138,7 +142,7 @@ namespace UnityEditor.Rendering.HighDefinition
 			    //Render queue filter
 			    // EditorGUI.PropertyField(rect, m_RenderQueue, Styles.renderQueueFilter);
                 // TODO: remove all this code when the fix for SerializedReference lands
-                m_RenderQueue.intValue = (int)(CustomPassRenderQueueType)EditorGUI.EnumPopup(rect, Styles.renderQueueFilter, (CustomPassRenderQueueType)m_RenderQueue.intValue);
+                m_RenderQueue.intValue = (int)(CustomPass.RenderQueueType)EditorGUI.EnumPopup(rect, Styles.renderQueueFilter, (CustomPass.RenderQueueType)m_RenderQueue.intValue);
 			    rect.y += Styles.defaultLineSpace;
 			    //Layer mask
 			    EditorGUI.PropertyField(rect, m_LayerMask, Styles.layerMask);
@@ -236,11 +240,12 @@ namespace UnityEditor.Rendering.HighDefinition
                 height += Styles.defaultLineSpace * (m_OverrideMaterial.objectReferenceValue != null ? m_MaterialLines : 1);
                 var mat = m_OverrideMaterial.objectReferenceValue as Material;
 
-                // Shader Passes currently disabled
-                // if (m_IsHDRPShader.boolValue || m_IsUnlitShader)
-                // 	height += Styles.defaultLineSpace; // help box
-                // else
-                // 	height += m_ShaderPassesList.GetHeight(); // shader passes list
+#if SHOW_PASS_NAMES
+                if (IsHDRPShader())
+                	height += Styles.defaultLineSpace; // help box
+                else
+                	height += m_ShaderPassesList.GetHeight(); // shader passes list
+#endif
 
                 height += Styles.defaultLineSpace; // sorting criteria;
             }
