@@ -6,27 +6,17 @@ using UnityEngine.Rendering;
 using UnityEngine.Rendering.HighDefinition;
 using System.Linq;
 using System;
+using System.Reflection;
 
 namespace UnityEditor.Rendering.HighDefinition
 {
-	/// <summary>
-	/// Tells a CustomPassDrawer which CustomPass class is intended for the GUI inside the CustomPassDrawer class
-	/// </summary>
-	[AttributeUsage(AttributeTargets.Class)]
-	public class CustomPassDrawerAttribute : Attribute
-	{
-		internal Type targetPassType;
-
-		public CustomPassDrawerAttribute(Type targetPassType) => this.targetPassType = targetPassType;
-	}
-
 	/// <summary>
 	/// Custom UI class for custom passes
 	/// </summary>
 	[CustomPassDrawerAttribute(typeof(CustomPass))]
     public class CustomPassDrawer
     {
-	    private class Styles
+	    class Styles
 	    {
 		    public static float defaultLineSpace = EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
             public static float reorderableListHandleIndentWidth = 12;
@@ -37,15 +27,17 @@ namespace UnityEditor.Rendering.HighDefinition
 			public static GUIContent clearFlags = new GUIContent("Clear Flags", "Clear Flags used when the render targets will are bound, before the pass renders.");
 	    }
 	    
-	    private bool firstTime = true;
+	    bool firstTime = true;
 
 	    // Serialized Properties
-		SerializedProperty      m_Name;
-		SerializedProperty      m_Enabled;
-		SerializedProperty      m_TargetColorBuffer;
-		SerializedProperty      m_TargetDepthBuffer;
-		SerializedProperty      m_ClearFlags;
-		SerializedProperty      m_PassFoldout;
+		SerializedProperty      	m_Name;
+		SerializedProperty      	m_Enabled;
+		SerializedProperty      	m_TargetColorBuffer;
+		SerializedProperty      	m_TargetDepthBuffer;
+		SerializedProperty      	m_ClearFlags;
+		SerializedProperty      	m_PassFoldout;
+		List<SerializedProperty>	m_CustomPassUserProperties = new List<SerializedProperty>();
+		Type						m_PassType;
 
 		void FetchProperties(SerializedProperty property)
 		{
@@ -57,14 +49,27 @@ namespace UnityEditor.Rendering.HighDefinition
 			m_PassFoldout = property.FindPropertyRelative("passFoldout");
 		}
 
+		void LoadUserProperties(SerializedProperty customPass)
+		{
+			foreach (var field in m_PassType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly))
+			{
+				var prop = customPass.FindPropertyRelative(field.Name);
+				if (prop != null)
+					m_CustomPassUserProperties.Add(prop);
+			}
+		}
+
 	    void InitInternal(SerializedProperty customPass)
 	    {
 			FetchProperties(customPass);
 			Initialize(customPass);
+			LoadUserProperties(customPass);
 		    firstTime = false;
 	    }
 
 		protected virtual void Initialize(SerializedProperty customPass) {}
+
+		internal void SetPassType(Type passType) => m_PassType = passType;
 
 	    internal void OnGUI(Rect rect, SerializedProperty property, GUIContent label)
 	    {
@@ -123,7 +128,11 @@ namespace UnityEditor.Rendering.HighDefinition
 
 		protected virtual void DoPassGUI(SerializedProperty customPass, Rect rect)
 		{
-			// TODO: default custom pass API with reflection
+			foreach (var prop in m_CustomPassUserProperties)
+			{
+				EditorGUI.PropertyField(rect, prop);
+				rect.y += Styles.defaultLineSpace;
+			}
 		}
 
 		void DoHeaderGUI(ref Rect rect)
@@ -144,8 +153,18 @@ namespace UnityEditor.Rendering.HighDefinition
 			EditorGUIUtility.labelWidth = 0;
 		}
 
+		protected virtual float GetPassHeight(SerializedProperty customPass)
+		{
+			float height = 0;
 
-		protected virtual float GetCustomPassHeight(SerializedProperty customPass) => 0;
+			foreach (var prop in m_CustomPassUserProperties)
+			{
+				height += EditorGUI.GetPropertyHeight(prop);
+				height += EditorGUIUtility.standardVerticalSpacing;
+			}
+
+			return height;
+		}
 
 	    internal float GetPropertyHeight(SerializedProperty property, GUIContent label)
 	    {
@@ -162,7 +181,7 @@ namespace UnityEditor.Rendering.HighDefinition
 				height += Styles.defaultLineSpace * 4; // name + target buffers + clearFlags
 		    }
 
-		    return height + GetCustomPassHeight(property);
+		    return height + GetPassHeight(property);
 	    }
     }
 }

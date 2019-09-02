@@ -37,6 +37,6 @@ namespace UnityEditor.Rendering.HighDefinition
 			// EditorGUI.PropertyField(rect, m_FullScreenPassMaterial, Styles.fullScreenPassMaterial);
         }
 
-		protected override float GetCustomPassHeight(SerializedProperty customPass) => Styles.defaultLineSpace;
+		protected override float GetPassHeight(SerializedProperty customPass) => Styles.defaultLineSpace;
     }
 }

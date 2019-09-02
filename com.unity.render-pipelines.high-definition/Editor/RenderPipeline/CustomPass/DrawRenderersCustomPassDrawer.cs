@@ -230,7 +230,7 @@ namespace UnityEditor.Rendering.HighDefinition
 			return HDEditorUtils.IsHDRPShader(mat?.shader);
 		}
 
-        protected override float GetCustomPassHeight(SerializedProperty customPass)
+        protected override float GetPassHeight(SerializedProperty customPass)
         {
             float height = Styles.defaultLineSpace * (m_FilterFoldout.boolValue ? m_FilterLines : 1);
 

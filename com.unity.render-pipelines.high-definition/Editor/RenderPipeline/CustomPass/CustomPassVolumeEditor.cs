@@ -72,11 +72,13 @@ namespace UnityEditor.Rendering.HighDefinition
                 if (attr.targetPassType == passType)
                 {
                     drawer = Activator.CreateInstance(drawerType) as CustomPassDrawer;
+                    drawer.SetPassType(passType);
                     break;
                 }
                 if (attr.targetPassType.IsAssignableFrom(passType))
                 {
                     drawer = Activator.CreateInstance(drawerType) as CustomPassDrawer;
+                    drawer.SetPassType(passType);
                 }
             }
 
