@@ -122,7 +122,11 @@ namespace UnityEditor.Rendering.HighDefinition
                 var asset = EditorDefaultSettings.GetOrAssignDefaultVolumeProfile();
 
                 var newAsset = (VolumeProfile)EditorGUILayout.ObjectField(k_DefaultVolumeProfileLabel, asset, typeof(VolumeProfile), false);
-                if (newAsset != null && newAsset != asset)
+                if (newAsset == null)
+                {
+                    Debug.Log("Default Volume Profile Asset cannot be null. Rolling back to previous value.");
+                }
+                else if (newAsset != asset)
                 {
                     asset = newAsset;
                     hdrpAsset.defaultVolumeProfile = asset;
