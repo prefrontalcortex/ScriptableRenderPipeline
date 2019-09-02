@@ -49,10 +49,10 @@ namespace UnityEngine.Rendering.HighDefinition
 
         internal struct RenderTargets
         {
-            public RenderTargetIdentifier  cameraColorBuffer;
-            public RenderTargetIdentifier  cameraDepthBuffer;
-            public RenderTargetIdentifier  customColorBuffer;
-            public RenderTargetIdentifier  customDepthBuffer;
+            public RTHandle  cameraColorBuffer;
+            public RTHandle  cameraDepthBuffer;
+            public RTHandle  customColorBuffer;
+            public RTHandle  customDepthBuffer;
         }
 
         internal void ExecuteInternal(ScriptableRenderContext renderContext, CommandBuffer cmd, HDCamera camera, CullingResults cullingResult, RenderTargets targets)
@@ -76,8 +76,8 @@ namespace UnityEngine.Rendering.HighDefinition
 
         void SetCustomPassTarget(CommandBuffer cmd, RenderTargets targets)
         {
-            RenderTargetIdentifier colorBuffer = (targetColorBuffer == TargetBuffer.Custom) ? targets.customColorBuffer : targets.cameraColorBuffer;
-            RenderTargetIdentifier depthBuffer = (targetDepthBuffer == TargetBuffer.Custom) ? targets.customDepthBuffer : targets.cameraDepthBuffer;
+            RTHandle colorBuffer = (targetColorBuffer == TargetBuffer.Custom) ? targets.customColorBuffer : targets.cameraColorBuffer;
+            RTHandle depthBuffer = (targetDepthBuffer == TargetBuffer.Custom) ? targets.customDepthBuffer : targets.cameraDepthBuffer;
             CoreUtils.SetRenderTarget(cmd, colorBuffer, depthBuffer, clearFlags);
         }
 

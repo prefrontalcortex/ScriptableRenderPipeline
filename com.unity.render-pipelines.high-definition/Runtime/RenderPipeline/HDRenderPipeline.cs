@@ -2111,8 +2111,6 @@ namespace UnityEngine.Rendering.HighDefinition
             aovRequest.PushCameraTexture(cmd, AOVBuffers.Color, hdCamera, m_CameraColorBuffer, aovBuffers);
             RenderPostProcess(cullingResults, hdCamera, target.id, renderContext, cmd);
 
-            RenderCustomPass(renderContext, cmd, hdCamera, cullingResults, CustomPassInjectionPoint.AfterPostProcess, target.id);
-
             // In developer build, we always render post process in m_AfterPostProcessBuffer at (0,0) in which we will then render debug.
             // Because of this, we need another blit here to the final render target at the right viewport.
             if (!HDUtils.PostProcessIsFinalPass() || aovRequest.isValid)
@@ -3265,7 +3263,7 @@ namespace UnityEngine.Rendering.HighDefinition
             }
         }
 
-        void RenderCustomPass(ScriptableRenderContext context, CommandBuffer cmd, HDCamera hdCamera, CullingResults cullingResults, CustomPassInjectionPoint injectionPoint, RenderTargetIdentifier finalTarget = default(RenderTargetIdentifier))
+        void RenderCustomPass(ScriptableRenderContext context, CommandBuffer cmd, HDCamera hdCamera, CullingResults cullingResults, CustomPassInjectionPoint injectionPoint)
         {
             var customPass = CustomPassVolume.GetActivePassVolume(injectionPoint);
 
@@ -3276,20 +3274,11 @@ namespace UnityEngine.Rendering.HighDefinition
                 
             var customPassTargets = new CustomPass.RenderTargets
             {
-                cameraColorBuffer = m_CameraColorBuffer.nameID,
-                cameraDepthBuffer = m_SharedRTManager.GetDepthStencilBuffer(msaa).nameID,
+                cameraColorBuffer = m_CameraColorBuffer,
+                cameraDepthBuffer = m_SharedRTManager.GetDepthStencilBuffer(msaa),
                 customColorBuffer = m_CustomPassColorBuffer,
                 customDepthBuffer = m_CustomPassDepthBuffer,
             };
-
-            // For the after post process we uses a different camera color buffer: the final target (or intermediate PP)
-            if (injectionPoint == CustomPassInjectionPoint.AfterPostProcess)
-            {
-                if (!HDUtils.PostProcessIsFinalPass())
-                    customPassTargets.cameraColorBuffer = m_IntermediateAfterPostProcessBuffer.nameID;
-                else
-                    customPassTargets.cameraColorBuffer = finalTarget;
-            }
 
             customPass.Execute(context, cmd, hdCamera, cullingResults, customPassTargets);
         }
