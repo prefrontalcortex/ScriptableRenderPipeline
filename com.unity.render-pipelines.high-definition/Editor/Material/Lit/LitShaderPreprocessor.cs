@@ -14,15 +14,6 @@ namespace UnityEditor.Rendering.HighDefinition
         {
             // CAUTION: Pass Name and Lightmode name must match in master node and .shader.
             // HDRP use LightMode to do drawRenderer and pass name is use here for stripping!
-            bool isGBufferPass = snippet.passName == "GBuffer";
-            bool isForwardPass = snippet.passName == "Forward";
-            bool isDepthOnlyPass = snippet.passName == "DepthOnly";
-            bool isMotionPass = snippet.passName == "MotionVectors";
-            bool isTransparentPrepass = snippet.passName == "TransparentDepthPrepass";
-            bool isTransparentPostpass = snippet.passName == "TransparentDepthPostpass";
-            bool isTransparentBackface = snippet.passName == "TransparentBackface";
-            bool isDistortionPass = snippet.passName == "DistortionVectors";
-            bool isTransparentForwardPass = isTransparentPostpass || isTransparentBackface || isTransparentPrepass || isDistortionPass;
 
             // Using Contains to include the Tessellation variants
             bool isBuiltInTerrainLit = shader.name.Contains("HDRP/TerrainLit");
@@ -43,6 +34,7 @@ namespace UnityEditor.Rendering.HighDefinition
 
             // When using forward only, we never need GBuffer pass (only Forward)
             // Gbuffer Pass is suppose to exist only for Lit shader thus why we test the condition here in case another shader generate a GBuffer pass (like VFX)
+            bool isGBufferPass = snippet.passName == "GBuffer";
             if (hdrpAsset.currentPlatformRenderPipelineSettings.supportedLitShaderMode == RenderPipelineSettings.SupportedLitShaderMode.ForwardOnly && isGBufferPass)
                 return true;
 
@@ -52,6 +44,7 @@ namespace UnityEditor.Rendering.HighDefinition
 
             // This test include all Lit variant from Shader Graph (Because we check "DepthOnly" pass)
             // Other forward material ("DepthForwardOnly") don't use keyword for WriteNormalBuffer but #define
+            bool isDepthOnlyPass = snippet.passName == "DepthOnly";
             if (isDepthOnlyPass)
             {
                 // When we are full forward, we don't have depth prepass or motion vectors pass without writeNormalBuffer
@@ -69,6 +62,7 @@ namespace UnityEditor.Rendering.HighDefinition
             {
                 // Forward material don't use keyword for WriteNormalBuffer but #define so we can't test for the keyword outside of isBuiltInLit
                 // otherwise the pass will be remove for non-lit shader graph version (like StackLit)
+                bool isMotionPass = snippet.passName == "MotionVectors";
                 if (isMotionPass)
                 {
                     // When we are full forward, we don't have depth prepass or motion vectors pass without writeNormalBuffer
@@ -84,6 +78,11 @@ namespace UnityEditor.Rendering.HighDefinition
                 if (!inputData.shaderKeywordSet.IsEnabled(m_Transparent)) // Opaque
                 {
                     // If opaque, we never need transparent specific passes (even in forward only mode)
+                    bool isTransparentPrepass = snippet.passName == "TransparentDepthPrepass";
+                    bool isTransparentPostpass = snippet.passName == "TransparentDepthPostpass";
+                    bool isTransparentBackface = snippet.passName == "TransparentBackface";
+                    bool isDistortionPass = snippet.passName == "DistortionVectors";
+                    bool isTransparentForwardPass = isTransparentPostpass || isTransparentBackface || isTransparentPrepass || isDistortionPass;
                     if (isTransparentForwardPass)
                         return true;
 
@@ -93,6 +92,7 @@ namespace UnityEditor.Rendering.HighDefinition
                         if (inputData.shaderKeywordSet.IsEnabled(m_ClusterLighting))
                             return true;
 
+                        bool isForwardPass = snippet.passName == "Forward";
                         if (isForwardPass && !inputData.shaderKeywordSet.IsEnabled(m_DebugDisplay))
                             return true;
                     }
@@ -117,6 +117,7 @@ namespace UnityEditor.Rendering.HighDefinition
                     return true;
 
                 // If transparent we don't need the motion vector pass
+                bool isMotionPass = snippet.passName == "MotionVectors";
                 if (isMotionPass)
                     return true;
 
