@@ -419,7 +419,7 @@ void RayGenPointShadowSingle()
 
     // Make sure it is taken into account in the ray conters
     if (_RayCountEnabled > 0)
-        _RayCountTexture[currentPixelCoord][RAYCOUNTVALUES_VISIBILITY] = _RayCountTexture[currentPixelCoord][RAYCOUNTVALUES_VISIBILITY] + 1;
+        _RayCountTexture[COORD_TEXTURE2D_X(currentPixelCoord)][RAYCOUNTVALUES_VISIBILITY] = _RayCountTexture[COORD_TEXTURE2D_X(currentPixelCoord)][RAYCOUNTVALUES_VISIBILITY] + 1;
 
     // Compute the world space position of the source pixel
     PositionInputs posInput = GetPositionInput(currentPixelCoord, _ScreenSize.zw, depthValue, UNITY_MATRIX_I_VP, GetWorldToViewMatrix(), 0);
@@ -456,7 +456,6 @@ void RayGenPointShadowSingle()
     TraceRay(_RaytracingAccelerationStructure, RAY_FLAG_CULL_BACK_FACING_TRIANGLES | RAY_FLAG_SKIP_CLOSEST_HIT_SHADER | RAY_FLAG_ACCEPT_FIRST_HIT_AND_END_SEARCH, RAYTRACING_OPAQUE_FLAG, 0, 1, 0, rayDescriptor, rayIntersection);
 
     // Add the contribution of this sample
-    float previousValue = _RaytracedDirectionalShadowIntegration[currentPixelCoord];
-    _RaytracedDirectionalShadowIntegration[currentPixelCoord] = previousValue + rayIntersection.color.x / (float)_RaytracingNumSamples;
+    float previousValue = _RaytracedDirectionalShadowIntegration[COORD_TEXTURE2D_X(currentPixelCoord)];
+    _RaytracedDirectionalShadowIntegration[COORD_TEXTURE2D_X(currentPixelCoord)] = previousValue + rayIntersection.color.x / (float)_RaytracingNumSamples;
 }
->>>>>>> d8248705eb8ae3f5a56a292fbf8693b58be87d8b
