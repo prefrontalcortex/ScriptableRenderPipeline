@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering.HighDefinition;
 using UnityEditor.ShaderGraph;
@@ -6,6 +8,8 @@ namespace UnityEditor.Rendering.HighDefinition
 {
     class LitShaderPreprocessor : BaseShaderPreprocessor
     {
+        Dictionary<Shader, System.Type> m_ShaderGraphMasterNodeType = new Dictionary<Shader, Type>();
+
         public override int Priority => 50;
 
         public LitShaderPreprocessor() {}
@@ -19,11 +23,20 @@ namespace UnityEditor.Rendering.HighDefinition
             bool isBuiltInTerrainLit = shader.name.Contains("HDRP/TerrainLit");
             bool isBuiltInLit = shader.name.Contains("HDRP/Lit") || shader.name.Contains("HDRP/LayeredLit") || isBuiltInTerrainLit;
 
-            if (shader.IsShaderGraph())
+            // Cache Shader Graph lookup data so we don't continually keep reloading graphs from disk.
+            // TODO: Should really be able to answer the questions "is shader graph" and "uses HDLitMasterNode" without
+            //       hitting disk on every invoke.
+            if (!m_ShaderGraphMasterNodeType.TryGetValue(shader, out var shaderGraphMasterNodeType))
             {
-                string shaderPath = AssetDatabase.GetAssetPath(shader);
-                isBuiltInLit |= GraphUtil.GetOutputNodeType(shaderPath) == typeof(HDLitMasterNode);
+                if (shader.IsShaderGraph())
+                {
+                    string shaderPath = AssetDatabase.GetAssetPath(shader);
+                    shaderGraphMasterNodeType = GraphUtil.GetOutputNodeType(shaderPath);
+                }
+
+                m_ShaderGraphMasterNodeType[shader] = shaderGraphMasterNodeType;
             }
+            isBuiltInLit |= shaderGraphMasterNodeType == typeof(HDLitMasterNode);
 
             // Caution: Currently only HDRP/TerrainLit is using keyword _ALPHATEST_ON with multi compile, we shouldn't test any other built in shader
             if (isBuiltInTerrainLit)
