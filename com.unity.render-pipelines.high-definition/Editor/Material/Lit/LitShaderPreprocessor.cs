@@ -6,6 +6,8 @@ namespace UnityEditor.Rendering.HighDefinition
 {
     class LitShaderPreprocessor : BaseShaderPreprocessor
     {
+        public override int Priority => 50;
+
         public LitShaderPreprocessor() {}
 
         protected override bool DoShadersStripper(HDRenderPipelineAsset hdrpAsset, Shader shader, ShaderSnippetData snippet, ShaderCompilerData inputData)
