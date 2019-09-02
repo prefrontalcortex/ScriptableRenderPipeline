@@ -221,13 +221,13 @@ namespace UnityEditor.Rendering.HighDefinition
 		bool IsUnlitShader()
 		{
 			var mat = m_OverrideMaterial.objectReferenceValue as Material;
-			return HDEditorUtils.IsUnlitHDRPShader(mat?.shader);
+			return HDShaderUtils.IsUnlitHDRPShader(mat?.shader);
 		}
 
 		bool IsHDRPShader()
 		{
 			var mat = m_OverrideMaterial.objectReferenceValue as Material;
-			return HDEditorUtils.IsHDRPShader(mat?.shader);
+			return HDShaderUtils.IsHDRPShader(mat?.shader);
 		}
 
         protected override float GetPassHeight(SerializedProperty customPass)

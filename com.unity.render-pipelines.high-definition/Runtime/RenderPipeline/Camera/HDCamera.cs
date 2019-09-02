@@ -419,8 +419,8 @@ namespace UnityEngine.Rendering.HighDefinition
 
             UpdateViewConstants(ref mainViewConstants, proj, view, cameraPosition, jitterProjectionMatrix, updatePreviousFrameConstants);
 
-            // XR instancing support
-            if (xr.instancingEnabled)
+            // XR single-pass support
+            if (xr.singlePassEnabled)
             {
                 for (int viewIndex = 0; viewIndex < viewCount; ++viewIndex)
                 {
@@ -433,7 +433,7 @@ namespace UnityEngine.Rendering.HighDefinition
             }
             else
             {
-                // Compute shaders always use the XR instancing path due to the lack of multi-compile
+                // Compute shaders always use the XR single-pass path due to the lack of multi-compile
                 xrViewConstants[0] = mainViewConstants;
             }
 
@@ -623,7 +623,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
         public void GetPixelCoordToViewDirWS(Vector4 resolution, ref Matrix4x4[] transforms)
         {
-            if (xr.instancingEnabled)
+            if (xr.singlePassEnabled)
             {
                 for (int viewIndex = 0; viewIndex < viewCount; ++viewIndex)
                 {
@@ -753,14 +753,14 @@ namespace UnityEngine.Rendering.HighDefinition
 
         // Pass all the systems that may want to initialize per-camera data here.
         // That way you will never create an HDCamera and forget to initialize the data.
-        public static HDCamera GetOrCreate(Camera camera, XRPass xrPass)
+        public static HDCamera GetOrCreate(Camera camera, int xrMultipassId = 0)
         {
             HDCamera hdCamera;
 
-            if (!s_Cameras.TryGetValue((camera, xrPass.multipassId), out hdCamera))
-        {
+            if (!s_Cameras.TryGetValue((camera, xrMultipassId), out hdCamera))
+            {
                 hdCamera = new HDCamera(camera);
-                s_Cameras.Add((camera, xrPass.multipassId), hdCamera);
+                s_Cameras.Add((camera, xrMultipassId), hdCamera);
             }
 
             return hdCamera;
@@ -851,7 +851,7 @@ namespace UnityEngine.Rendering.HighDefinition
 
             cmd.SetGlobalInt(HDShaderIDs._FrameCount,        frameCount);
 
-            // TODO: qualify this code with xrInstancingEnabled when compute shaders can use keywords
+            // TODO: qualify this code with xr.singlePassEnabled when compute shaders can use keywords
             cmd.SetGlobalInt(HDShaderIDs._XRViewCount, viewCount);
             cmd.SetGlobalBuffer(HDShaderIDs._XRViewConstants, xrViewConstantsGpu);
         }
