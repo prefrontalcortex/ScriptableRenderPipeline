@@ -123,7 +123,10 @@ namespace UnityEngine.Rendering.HighDefinition
             => AggregateFrameSettings(
                 ref aggregatedFrameSettings,
                 camera,
-                camera.cameraType == CameraType.SceneView ? sceneViewFrameSettingsContainer : additionalData,
+#if UNITY_EDITOR
+                camera.cameraType == CameraType.SceneView ? sceneViewFrameSettingsContainer : 
+#endif
+                additionalData,
                 ref defaultHdrpAsset.GetDefaultFrameSettings(additionalData?.defaultFrameSettings ?? FrameSettingsRenderType.Camera), //fallback on Camera for SceneCamera and PreviewCamera
                 hdrpAsset.currentPlatformRenderPipelineSettings
                 );
@@ -280,9 +283,11 @@ namespace UnityEngine.Rendering.HighDefinition
             var panel = DebugManager.instance.GetPanel(
                 menuName,
                 createIfNull: true,
+#if UNITY_EDITOR
                 frameSettingsContainer == sceneViewFrameSettingsContainer
-                ? 1  // Scene Camera
-                : 2, // Other Cameras (from Camera component)
+                ? 1 : // Scene Camera
+#endif
+                2,    // Other Cameras (from Camera component)
                 overrideIfExist: true);
             panel.children.Add(widgets.ToArray());
         }
