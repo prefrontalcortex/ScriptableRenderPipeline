@@ -30,6 +30,8 @@ namespace UnityEditor.Rendering.HighDefinition
 
         class DefaultSettingsPanel : VisualElement
         {
+            const int k_LabelWidth = 220;
+
             VolumeComponentListEditor m_ComponentList;
             Editor m_Cached;
 
@@ -100,6 +102,9 @@ namespace UnityEditor.Rendering.HighDefinition
                     return;
                 }
 
+                var oldWidth = EditorGUIUtility.labelWidth;
+                EditorGUIUtility.labelWidth = k_LabelWidth;
+
                 GUI.enabled = false;
                 EditorGUILayout.ObjectField(k_DefaultHDRPAsset, hdrpAsset, typeof(HDRenderPipelineAsset), false);
                 GUI.enabled = true;
@@ -110,6 +115,7 @@ namespace UnityEditor.Rendering.HighDefinition
                 HDRenderPipelineUI.GeneralSection.Draw(serializedHDRPAsset, null);
 
                 serializedObject.ApplyModifiedProperties();
+                EditorGUIUtility.labelWidth = oldWidth;
             }
 
             private static GUIContent k_DefaultVolumeProfileLabel = new GUIContent("Default Volume Profile Asset");
@@ -118,6 +124,9 @@ namespace UnityEditor.Rendering.HighDefinition
                 var hdrpAsset = HDRenderPipeline.defaultAsset;
                 if (hdrpAsset == null)
                     return;
+
+                var oldWidth = EditorGUIUtility.labelWidth;
+                EditorGUIUtility.labelWidth = k_LabelWidth;
 
                 var asset = EditorDefaultSettings.GetOrAssignDefaultVolumeProfile();
 
@@ -135,7 +144,9 @@ namespace UnityEditor.Rendering.HighDefinition
 
                 Editor.CreateCachedEditor(asset,
                     Type.GetType("UnityEditor.Rendering.VolumeProfileEditor"), ref m_Cached);
+                EditorGUIUtility.labelWidth -= 18;
                 m_Cached.OnInspectorGUI();
+                EditorGUIUtility.labelWidth = oldWidth;
             }
 
             void Draw_DefaultFrameSettings()
