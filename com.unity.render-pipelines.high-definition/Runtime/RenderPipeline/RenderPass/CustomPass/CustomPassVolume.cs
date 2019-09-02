@@ -15,7 +15,7 @@ namespace UnityEngine.Rendering.HighDefinition
         /// <summary>
         /// Whether or not the volume is global. If true, the component will ignore all colliders attached to it
         /// </summary>
-        public bool                     isGlobal;
+        public bool isGlobal;
 
         /// <summary>
         /// List of custom passes to execute
@@ -23,7 +23,7 @@ namespace UnityEngine.Rendering.HighDefinition
         /// <typeparam name="CustomPass"></typeparam>
         /// <returns></returns>
         [SerializeReference]
-        public List<CustomPass>         customPasses = new List<CustomPass>();
+        public readonly List<CustomPass> customPasses = new List<CustomPass>();
 
         /// <summary>
         /// Where the custom passes are going to be injected in HDRP
