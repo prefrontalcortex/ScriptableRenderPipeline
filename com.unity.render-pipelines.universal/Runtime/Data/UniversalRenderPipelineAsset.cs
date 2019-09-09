@@ -203,7 +203,7 @@ namespace UnityEngine.Rendering.Universal
             }
         }
 
-        [MenuItem("Assets/Create/Rendering/Universal Render Pipeline/Pipeline Asset(Forward Renderer)", priority = CoreUtils.assetCreateMenuPriority1)]
+        [MenuItem("Assets/Create/Rendering/Universal Render Pipeline/Pipeline Asset (Forward Renderer)", priority = CoreUtils.assetCreateMenuPriority1)]
         static void CreateUniversalPipeline()
         {
             ProjectWindowUtil.StartNameEditingIfProjectWindowExists(0, CreateInstance<CreateUniversalPipelineAsset>(),
@@ -740,6 +740,10 @@ namespace UnityEngine.Rendering.Universal
                 k_AssetVersion = 5;
                 m_NeedsUpgrade = true;
             }
+#if UNITY_EDITOR
+            if(m_NeedsUpgrade)
+                EditorApplication.delayCall = () => UpgradeAsset(this);
+#endif
         }
 
 
