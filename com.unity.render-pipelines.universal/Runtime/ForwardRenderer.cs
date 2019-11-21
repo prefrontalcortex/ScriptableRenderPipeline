@@ -12,7 +12,7 @@ namespace UnityEngine.Rendering.Universal
         const int k_DepthStencilBufferBits = 32;
         const string k_CreateCameraTextures = "Create Camera Texture";
 
-        ColorGradingLutPass m_ColorGradingLutPass;
+        // ColorGradingLutPass m_ColorGradingLutPass;
         DepthOnlyPass m_DepthPrepass;
         MainLightShadowCasterPass m_MainLightShadowCasterPass;
         AdditionalLightsShadowCasterPass m_AdditionalLightsShadowCasterPass;
@@ -23,8 +23,8 @@ namespace UnityEngine.Rendering.Universal
         CopyColorPass m_CopyColorPass;
         DrawObjectsPass m_RenderTransparentForwardPass;
         InvokeOnRenderObjectCallbackPass m_OnRenderObjectCallbackPass;
-        PostProcessPass m_PostProcessPass;
-        PostProcessPass m_FinalPostProcessPass;
+        // PostProcessPass m_PostProcessPass;
+        // PostProcessPass m_FinalPostProcessPass;
         FinalBlitPass m_FinalBlitPass;
         CapturePass m_CapturePass;
 
@@ -70,15 +70,15 @@ namespace UnityEngine.Rendering.Universal
             m_AdditionalLightsShadowCasterPass = new AdditionalLightsShadowCasterPass(RenderPassEvent.BeforeRenderingShadows);
             m_DepthPrepass = new DepthOnlyPass(RenderPassEvent.BeforeRenderingPrepasses, RenderQueueRange.opaque, data.opaqueLayerMask);
             m_ScreenSpaceShadowResolvePass = new ScreenSpaceShadowResolvePass(RenderPassEvent.BeforeRenderingPrepasses, m_ScreenspaceShadowsMaterial);
-            m_ColorGradingLutPass = new ColorGradingLutPass(RenderPassEvent.BeforeRenderingOpaques, data.postProcessData);
+            // m_ColorGradingLutPass = new ColorGradingLutPass(RenderPassEvent.BeforeRenderingOpaques, data.postProcessData);
             m_RenderOpaqueForwardPass = new DrawObjectsPass("Render Opaques", true, RenderPassEvent.BeforeRenderingOpaques, RenderQueueRange.opaque, data.opaqueLayerMask, m_DefaultStencilState, stencilData.stencilReference);
             m_CopyDepthPass = new CopyDepthPass(RenderPassEvent.BeforeRenderingOpaques, m_CopyDepthMaterial);
             m_DrawSkyboxPass = new DrawSkyboxPass(RenderPassEvent.BeforeRenderingSkybox);
             m_CopyColorPass = new CopyColorPass(RenderPassEvent.BeforeRenderingTransparents, m_SamplingMaterial);
             m_RenderTransparentForwardPass = new DrawObjectsPass("Render Transparents", false, RenderPassEvent.BeforeRenderingTransparents, RenderQueueRange.transparent, data.transparentLayerMask, m_DefaultStencilState, stencilData.stencilReference);
             m_OnRenderObjectCallbackPass = new InvokeOnRenderObjectCallbackPass(RenderPassEvent.BeforeRenderingPostProcessing);
-            m_PostProcessPass = new PostProcessPass(RenderPassEvent.BeforeRenderingPostProcessing, data.postProcessData);
-            m_FinalPostProcessPass = new PostProcessPass(RenderPassEvent.AfterRenderingPostProcessing, data.postProcessData);
+            // m_PostProcessPass = new PostProcessPass(RenderPassEvent.BeforeRenderingPostProcessing, data.postProcessData);
+            // m_FinalPostProcessPass = new PostProcessPass(RenderPassEvent.AfterRenderingPostProcessing, data.postProcessData);
             m_CapturePass = new CapturePass(RenderPassEvent.AfterRendering);
             m_FinalBlitPass = new FinalBlitPass(RenderPassEvent.AfterRendering, m_BlitMaterial);
 
@@ -100,7 +100,7 @@ namespace UnityEngine.Rendering.Universal
         /// <inheritdoc />
         public override void Cleanup()
         {
-            m_PostProcessPass.Cleanup();
+            // m_PostProcessPass.Cleanup();
             CoreUtils.Destroy(m_BlitMaterial);
             CoreUtils.Destroy(m_CopyDepthMaterial);
             CoreUtils.Destroy(m_SamplingMaterial);
@@ -208,11 +208,13 @@ namespace UnityEngine.Rendering.Universal
                 EnqueuePass(m_ScreenSpaceShadowResolvePass);
             }
 
+            /*
             if (postProcessEnabled)
             {
                 m_ColorGradingLutPass.Setup(m_ColorGradingLut);
                 EnqueuePass(m_ColorGradingLutPass);
             }
+            */
 
             EnqueuePass(m_RenderOpaqueForwardPass);
 
@@ -248,6 +250,7 @@ namespace UnityEngine.Rendering.Universal
             // we need to stay in a RT
             if (afterRenderExists)
             {
+                /* 
                 bool willRenderFinalPass = (m_ActiveCameraColorAttachment != RenderTargetHandle.CameraTarget);
                 // perform post with src / dest the same
                 if (postProcessEnabled)
@@ -276,6 +279,7 @@ namespace UnityEngine.Rendering.Universal
                         EnqueuePass(m_FinalBlitPass);
                     }
                 }
+                */
             }
             else
             {
@@ -283,15 +287,19 @@ namespace UnityEngine.Rendering.Universal
                 {
                     if (requiresFinalPostProcessPass)
                     {
+                        /*
                         m_PostProcessPass.Setup(cameraTargetDescriptor, m_ActiveCameraColorAttachment, m_AfterPostProcessColor, m_ActiveCameraDepthAttachment, m_ColorGradingLut, true, false);
                         EnqueuePass(m_PostProcessPass);
                         m_FinalPostProcessPass.SetupFinalPass(m_AfterPostProcessColor);
                         EnqueuePass(m_FinalPostProcessPass);
+                        */
                     }
                     else
                     {
+                    	/*
                         m_PostProcessPass.Setup(cameraTargetDescriptor, m_ActiveCameraColorAttachment, RenderTargetHandle.CameraTarget, m_ActiveCameraDepthAttachment, m_ColorGradingLut, false, true);
                         EnqueuePass(m_PostProcessPass);
+                        */
                     }
                 }
                 else if (m_ActiveCameraColorAttachment != RenderTargetHandle.CameraTarget)
