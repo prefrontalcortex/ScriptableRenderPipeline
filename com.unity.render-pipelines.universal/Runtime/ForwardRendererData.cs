@@ -47,8 +47,8 @@ namespace UnityEngine.Rendering.Universal
             public Shader samplingPS;
         }
 
-        [Reload("Runtime/Data/PostProcessData.asset")]
-        public PostProcessData postProcessData = null;
+        // [Reload("Runtime/Data/PostProcessData.asset")]
+        // public PostProcessData postProcessData = null;
 
         public ShaderResources shaders = null;
 
@@ -65,7 +65,7 @@ namespace UnityEngine.Rendering.Universal
             if (!Application.isPlaying)
             {
                 ResourceReloader.ReloadAllNullIn(this, UniversalRenderPipelineAsset.packagePath);
-                ResourceReloader.ReloadAllNullIn(postProcessData, UniversalRenderPipelineAsset.packagePath);
+                // ResourceReloader.ReloadAllNullIn(postProcessData, UniversalRenderPipelineAsset.packagePath);
             }
 #endif
             return new ForwardRenderer(this);
@@ -92,7 +92,7 @@ namespace UnityEngine.Rendering.Universal
             try
             {
                 ResourceReloader.ReloadAllNullIn(this, UniversalRenderPipelineAsset.packagePath);
-                ResourceReloader.ReloadAllNullIn(postProcessData, UniversalRenderPipelineAsset.packagePath);
+                // ResourceReloader.ReloadAllNullIn(postProcessData, UniversalRenderPipelineAsset.packagePath);
             }
             catch {}
 #endif
