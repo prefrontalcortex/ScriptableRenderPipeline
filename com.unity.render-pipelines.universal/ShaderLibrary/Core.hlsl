@@ -191,11 +191,24 @@ real ComputeFogIntensity(real fogFactor)
     return fogIntensity;
 }
 
+half4 _CustomFogControl;
+
 half3 MixFogColor(real3 fragColor, real3 fogColor, real fogFactor)
 {
 #if defined(FOG_LINEAR) || defined(FOG_EXP) || defined(FOG_EXP2)
-    real fogIntensity = ComputeFogIntensity(fogFactor);
-    fragColor = lerp(fogColor, fragColor, fogIntensity);
+    if(!any(_CustomFogControl > 0)) {
+        real fogIntensity = ComputeFogIntensity(fogFactor);
+        fragColor = lerp(fogColor, fragColor, fogIntensity); 
+    }
+    else {
+    // underwater: fog intensity is calculated separately for each color channel
+        real3 fogIntensities = real3(
+            ComputeFogIntensity(max(0, fogFactor * _CustomFogControl.r)), 
+            ComputeFogIntensity(max(0, fogFactor * _CustomFogControl.g)), 
+            ComputeFogIntensity(max(0, fogFactor * _CustomFogControl.b)));
+        
+        fragColor = lerp(fogColor, fragColor, fogIntensities);
+    }
 #endif
     return fragColor;
 }
