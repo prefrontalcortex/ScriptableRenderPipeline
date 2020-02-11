@@ -73,7 +73,7 @@ namespace UnityEngine.Rendering.Universal
             m_ScreenSpaceShadowResolvePass = new ScreenSpaceShadowResolvePass(RenderPassEvent.BeforeRenderingPrepasses, screenspaceShadowsMaterial);
             // m_ColorGradingLutPass = new ColorGradingLutPass(RenderPassEvent.BeforeRenderingPrepasses, data.postProcessData);
             m_RenderOpaqueForwardPass = new DrawObjectsPass("Render Opaques", true, RenderPassEvent.BeforeRenderingOpaques, RenderQueueRange.opaque, data.opaqueLayerMask, m_DefaultStencilState, stencilData.stencilReference);
-            // m_CopyDepthPass = new CopyDepthPass(RenderPassEvent.AfterRenderingSkybox, copyDepthMaterial);
+            m_CopyDepthPass = new CopyDepthPass(RenderPassEvent.AfterRenderingSkybox, copyDepthMaterial);
             m_DrawSkyboxPass = new DrawSkyboxPass(RenderPassEvent.BeforeRenderingSkybox);
             m_CopyColorPass = new CopyColorPass(RenderPassEvent.BeforeRenderingTransparents, samplingMaterial);
             m_TransparentSettingsPass = new TransparentSettingsPass(RenderPassEvent.BeforeRenderingTransparents, data.shadowTransparentReceive);
@@ -132,15 +132,15 @@ namespace UnityEngine.Rendering.Universal
             }
 
             // Should apply post-processing after rendering this camera?
-            bool applyPostProcessing = cameraData.postProcessEnabled;
-            
+            bool applyPostProcessing = false; // cameraData.postProcessEnabled;
+
             // There's at least a camera in the camera stack that applies post-processing
-            bool anyPostProcessing = renderingData.postProcessingEnabled;
+            bool anyPostProcessing = false; // renderingData.postProcessingEnabled;
 
             var postProcessFeatureSet = UniversalRenderPipeline.asset.postProcessingFeatureSet;
 
             // We generate color LUT in the base camera only. This allows us to not break render pass execution for overlay cameras.
-            bool generateColorGradingLUT = anyPostProcessing && cameraData.renderType == CameraRenderType.Base;
+            //bool generateColorGradingLUT = anyPostProcessing && cameraData.renderType == CameraRenderType.Base;
 #if POST_PROCESSING_STACK_2_0_0_OR_NEWER
             // PPv2 doesn't need to generate color grading LUT.
             if (postProcessFeatureSet == PostProcessingFeatureSet.PostProcessingV2)
@@ -230,11 +230,11 @@ namespace UnityEngine.Rendering.Universal
                 EnqueuePass(m_DepthPrepass);
             }
 
-            if (generateColorGradingLUT)
-            {
-                m_ColorGradingLutPass.Setup(m_ColorGradingLut);
-                EnqueuePass(m_ColorGradingLutPass);
-            }
+            //if (generateColorGradingLUT)
+            //{
+            //    m_ColorGradingLutPass.Setup(m_ColorGradingLut);
+            //    EnqueuePass(m_ColorGradingLutPass);
+            //}
 
             EnqueuePass(m_RenderOpaqueForwardPass);
 
@@ -362,11 +362,11 @@ namespace UnityEngine.Rendering.Universal
                 var sourceForFinalPass = (applyPostProcessing) ? m_AfterPostProcessColor : m_ActiveCameraColorAttachment;
 
                 // Do FXAA or any other final post-processing effect that might need to run after AA.
-                if (applyFinalPostProcessing)
-                {
-                    m_FinalPostProcessPass.SetupFinalPass(sourceForFinalPass);
-                    EnqueuePass(m_FinalPostProcessPass);
-                }
+                //if (applyFinalPostProcessing)
+                //{
+                //    m_FinalPostProcessPass.SetupFinalPass(sourceForFinalPass);
+                //    EnqueuePass(m_FinalPostProcessPass);
+                //}
 
                 // if post-processing then we already resolved to camera target while doing post.
                 // Also only do final blit if camera is not rendering to RT.
@@ -387,11 +387,11 @@ namespace UnityEngine.Rendering.Universal
             }
 
             // stay in RT so we resume rendering on stack after post-processing
-            else if (applyPostProcessing)
-            {
-                m_PostProcessPass.Setup(cameraTargetDescriptor, m_ActiveCameraColorAttachment, m_AfterPostProcessColor, m_ActiveCameraDepthAttachment, m_ColorGradingLut, false, false);
-                EnqueuePass(m_PostProcessPass);
-            }
+            //else if (applyPostProcessing)
+            //{
+            //    m_PostProcessPass.Setup(cameraTargetDescriptor, m_ActiveCameraColorAttachment, m_AfterPostProcessColor, m_ActiveCameraDepthAttachment, m_ColorGradingLut, false, false);
+            //    EnqueuePass(m_PostProcessPass);
+            //}
 
             }
 
