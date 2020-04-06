@@ -1,3 +1,54 @@
+# THIS REPOSITORY HAS MOVED
+tl;dr As of April 6 2020 the old SRP repository is no longer in use or maintained. Please migrate to using the new repository: https://github.com/Unity-Technologies/Graphics 
+
+When the first commit was made in the ScriptableRenderPipeline repo on April 30, 2013 almost 7 years ago, nobody really knew what it would turn into. And here we are 13,000+ commits later and the SRP repo is an integral part of all new graphics systems at Unity, and serves as the source of both the HighDefinitionRenderPipeline and the UniversalRenderPipeline packages.
+
+However, dust and unwanted artefacts have been gathering in all corners of the repo, which has led to some less than desirable cloning times with an average clone taking more than 15 minutes. Given the fact that the repo is at the core of many graphics tests at Unity and is cloned more than a thousand times per day by our CI systems, this leads to a lot of wasted time. Time that we want to reclaim.
+
+Because of that we have created a new repository with an entirely rewritten history with all new SHAs and LFs enabled.  Also since the original scope has changed a lot we simply call that repository Graphics.
+
+## So, here is the plan going forward:
+
+We are keeping the original public ScriptableRenderPipeline repo as it is - although trimming master to the latest public release. We may take the reposiory offline for a period of a week or so for backup. This is both to preserve history and to ensure that we don’t break forks and submodules from one day to the other.
+The new public Graphics repo is the only one that will be getting updates from this day and forward.
+
+**Migration Steps:**
+The new repository is located at https://github.com/Unity-Technologies/Graphics. 
+
+If you are simply looking at the code and the branches we have, there is no need to do anything complicated. You just need to clone the repository and delete the old one from your computer. 
+
+**Are you working directly on the repository?**
+If you have been working in the SRP repository there are two possible steps needed to take. 
+
+**Did you have all of your branches already pushed?**
+If so then those branches will exist on the new repository already. Feel free to pull them and continue working.
+
+**I have some changes locally that I have not pushed**
+You will need to manually apply these changes on top of the new repository. You can do this either by manually applying a patch, or by rebasing. One very important thing - do NOT merge the two repositories together as it will lead to a very very broken history. 
+
+**Are you working on a fork?**
+Do you have a private fork of SRP you are using? You will need to migrate over to the new repository. There are a number of ways to do this depending on how you have made changes in your fork.
+
+*“I am working right in my forks master and merging in Unity master whenever I feel I want to update”*
+It will be difficult to migrate and also preserve history, you will need to either cherry pick your individual commits across to the new repository or do diff and make a single commit with this diff.
+
+**Taking the diff method:**
+Make a patch file of your changes. We do this by taking a diff from the last master you had, and diff the working branch. Then apply this to the new fork.
+
+ //get changelist of the common base
+git merge-base master <mybranch>
+
+//save the diff from the latest master merged and the branch
+git diff <common base from above> <mybranch>  patch.diff
+
+//Go to the other folder where the new fork is cloned
+Git apply patch.diff
+
+*“I am working on a branch and continually rebase my changes on Unity master whenever I feel I want to update”*
+You will need to create a new fork of the new repository then clone your new fork. Next, set your old fork as a remote and rebase your old branch from your old fork on top of master (or release branch) in  your new fork
+
+##Old Infomation Below##
+
 ## NOTE: We have migrated reported issues to FogBugz. You can only log further issues via the Unity bug tracker. To see how, read [this](https://unity3d.com/unity/qa/bug-reporting).
 
 # Unity Scriptable Render Pipeline
